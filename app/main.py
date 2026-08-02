@@ -1,8 +1,10 @@
-
+from db import executeQuery
 from fastapi import FastAPI
 
 app = FastAPI()
 
-@app.get("/hello")
+@app.get("/sampleData")
 async def hello():
-    return {"message": "Hello World"}
+    data = executeQuery("SELECT * FROM cigarette_smoking limit 5")
+
+    return data
