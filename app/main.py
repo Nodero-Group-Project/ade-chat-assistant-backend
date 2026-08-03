@@ -16,7 +16,9 @@ async def report():
         return {}
 
     filename = datetime.now().strftime("%Y%m%d_%H%M%S_%f") + ".csv"
-    db.write_csv(data,filename)
+    file_path = os.path.join(REPORT_DIR, filename)
+
+    db.write_csv(data,file_path)
 
     return {
         "data":data,
