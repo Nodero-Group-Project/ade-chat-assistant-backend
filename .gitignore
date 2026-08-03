@@ -54,3 +54,6 @@ desktop.ini
 *.temp
 *.swp
 *.bak
+
+# Exports folder
+exports/
