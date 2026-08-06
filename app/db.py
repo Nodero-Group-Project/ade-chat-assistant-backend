@@ -9,7 +9,7 @@ load_dotenv()
 CONNECTION_STRING = os.getenv("DB_CONNECTION_STRING")
 
 def executeQuery(query):
-    print(CONNECTION_STRING)
+    
     connection = None
 
     try:
