@@ -5,6 +5,7 @@ from datetime import datetime
 from fastapi import HTTPException
 import os
 import llm_query
+from intent_classification import classify_intent
 
 app = FastAPI()
 REPORT_DIR = "exports"
@@ -12,7 +13,8 @@ REPORT_DIR = "exports"
 @app.get("/report")
 async def report(question: str):
 
-    sql_command = llm_query.query_llm(question)
+    classification = classify_intent(question)
+    sql_command = llm_query.query_llm(question, classification)
     print(sql_command)
 
     data = db.executeQuery(sql_command)
@@ -20,7 +22,11 @@ async def report(question: str):
     # data = db.executeQuery("select * from cigarette_smoking where cen23_geo_008 = '9999' and cen23_cig_002 = '01' and cen23_eth_004 = '12913' and cen23_age_008 = '2'")
 
     if not data:
-        return {}
+        return {
+            "classification": classification,
+            "data": [],
+            "csvFile": None,
+        }
 
     filename = datetime.now().strftime("%Y%m%d_%H%M%S_%f") + ".csv"
     file_path = os.path.join(REPORT_DIR, filename)
@@ -28,6 +34,7 @@ async def report(question: str):
     db.write_csv(data,file_path)
 
     return {
+        "classification": classification,
         "data":data,
         "csvFile":filename
     }

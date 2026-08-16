@@ -1,14 +1,10 @@
+import json
+
 from groq import Groq
 from dotenv import load_dotenv
 import os
 
 load_dotenv()
-
-intents = [
-"find_....statistics",
-"find....statistics",
-"find...._statistics"
-]
 
 api_key = os.getenv("GROQ_API_KEY")
 client = Groq(api_key=api_key)
@@ -42,9 +38,23 @@ SMOKING_INTENTS = [
 prompt = """
 You are a intent classification model for a dataset search system
 
-Classify to one of the following intents: {SMOKING_INTENTS}
+Given the user query, classify to one of the following intents: 
+{SMOKING_INTENTS}
 
-Return in the format...
+Also extract any entities mentioned in the query (location, time period, topic, metric, etc)
+
+Return ONLY valid JSON in this exact format, no other text:
+{{
+  "intent": "<one of the intents above>",
+  "confidence": <float between 0 and 1>,
+  "entities": {{
+    "location": "...",
+    "time": "...",
+    "topic": "..."
+  }}
+}}
+
+User query: "{user_query}"
 """
 
 def classify_intent(user_query, intents):
@@ -54,7 +64,7 @@ def classify_intent(user_query, intents):
         messages=[
             {
                 "role": "system",
-                "content": prompt.format(intents=intents)
+                "content": prompt.format(SMOKING_INTENTS=intents, user_query=user_query)
             },
             {
                 "role": "user",
@@ -62,4 +72,12 @@ def classify_intent(user_query, intents):
             }
         ]
     )
+    raw_text = completion.content[0].text.strip()
+    raw_text = raw_text.replace("```json", "").replace("```", "").strip()
+    
+    try:
+        result = json.loads(raw_text)
+    except json.JSONDecodeError:
+        return {"intent": "unknown", "confidence": 0.0, "entities": {"location": "", "time": "", "topic": ""}}
     print(completion.choices[0].message.content)
+    return result

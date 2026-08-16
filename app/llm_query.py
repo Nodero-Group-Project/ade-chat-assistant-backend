@@ -13,9 +13,16 @@ client = Groq(api_key=api_key)
 
 # get
 
-def query_llm(user_query):
-    db_structure = "on a postgres database there is table called cigarette_smoking "
-    db_structure += "ONLY write a SQL query to answer the the users questions, DO NOT RETURN ANYTHING ELSE"
+def query_llm(user_query, classification=None):
+    db_structure = """
+You generate PostgreSQL for a dataset search system.
+The database contains a table called cigarette_smoking.
+Use the user's original question together with the classified intent and
+entities to select and filter the relevant dataset rows.
+Return ONLY one executable SQL query. Do not return markdown or explanations.
+"""
+    if classification:
+        db_structure += f"\nClassified request: {classification}"
 
     completion = client.chat.completions.create(
         model="qwen/qwen3.6-27b",
