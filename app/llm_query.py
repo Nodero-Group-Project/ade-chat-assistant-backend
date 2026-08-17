@@ -5,32 +5,36 @@ This is a simple test script to connect to groq API server and get a response.
 from groq import Groq
 from dotenv import load_dotenv
 import os
+import json
 
-load_dotenv()
+load_dotenv(os.path.join(os.path.dirname(__file__), ".env"))
 
 api_key = os.getenv("GROQ_API_KEY")
 client = Groq(api_key=api_key)
 
 # get
 
-def query_llm(user_query, classification=None):
-    db_structure = """
-You generate PostgreSQL for a dataset search system.
-The database contains a table called cigarette_smoking.
-Use the user's original question together with the classified intent and
-entities to select and filter the relevant dataset rows.
-Return ONLY one executable SQL query. Do not return markdown or explanations.
-"""
-    if classification:
-        db_structure += f"\nClassified request: {classification}"
+def query_llm(user_query: str, dataset: dict, analysis: dict) -> str:
+    prompt = f"""
+    Convert the user query into a query for the selected dataset.
+    
+    User query: {user_query}
+    
+    Selected dataset: {json.dumps(dataset, indent=2)}
+    
+    Intent and extracted entities: {json.dumps(analysis, indent=2)}
+    
+    Return only the API URL
+    """
 
     completion = client.chat.completions.create(
         model="qwen/qwen3.6-27b",
         reasoning_format="hidden",
+        max_completion_tokens=1024,
         messages=[
             {
                 "role": "system",  # Define role of message sender (user, system, etc)
-                "content": db_structure  # Enter prompt here
+                "content": prompt  # Enter prompt here
             }
             ,
             {
@@ -41,8 +45,8 @@ Return ONLY one executable SQL query. Do not return markdown or explanations.
         
     ) 
     print(completion.choices[0].message.content)
-    return(completion.choices[0].message.content)
+    return(completion.choices[0].message.content.strip())
     
 
-if __name__ == "__main__":
-    query_llm("What is the average age of cigarette smokers in the database?")
+# if __name__ == "__main__":
+#     query_llm("What is the average age of cigarette smokers in the database?")

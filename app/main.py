@@ -1,19 +1,47 @@
-import db
+from app.datasets import datasets
+from app import db
 from fastapi import FastAPI
 from fastapi.responses import FileResponse
 from datetime import datetime
 from fastapi import HTTPException
 import os
-import llm_query
-from intent_classification import classify_intent
+from app import llm_query
+from app.intent_classification import analyse_query
 
 app = FastAPI()
 REPORT_DIR = "exports"
 
 @app.get("/report")
 async def report(question: str):
-
-    classification = classify_intent(question)
+    analysis = analyse_query(question)
+    
+    if not analysis["selected_dataset_id"]:
+        return {
+            "question": question,
+            "analysis": analysis,
+            "data": [],
+            "csvFile": None,
+        }
+    selected_dataset_id = analysis["selected_dataset_id"]
+    
+    selected_dataset = next(
+        dataset
+        for dataset in datasets()
+        if dataset["id"] == selected_dataset_id
+    )
+    query_result = llm_query.query_llm(
+        user_query=question,
+        dataset=selected_dataset,
+        analysis=analysis
+    )
+    
+    return {
+        "question": question,
+        "analysis": analysis,
+        "selected_dataset": selected_dataset,
+        "query_result": query_result,
+    }
+    
     sql_command = llm_query.query_llm(question, classification)
     print(sql_command)
 
