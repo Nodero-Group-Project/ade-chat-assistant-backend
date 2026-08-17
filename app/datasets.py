@@ -1,28 +1,28 @@
 DATASETS = [
     {
         "id": "CEN23_HAD_020",
-        "name": "Cigarette smoking behaviour, ethnicity, age, and gender",
-        "description": "Cigarette smoking behaviour by ethnicity, age, gender, location, and census year for 2013, 2018, and 2023.",
+        "name": "Cigarette smoking behaviour, ethnicity, age, and gender for the census usually resident population count aged 15 years and over, (RC, TALB, Health), 2013, 2018, and 2023 Censuses",
+        "description": "Cigarette smoking behaviour, ethnicity (detailed total responses level 4), age (life cycle groups), and gender for the census usually resident population count aged 15 years and over, for regional councils, territorial authorities and Auckland local boards, health regions, health districts, 2013, 2018, and 2023 Censuses."
     },
     {
         "id": "CEN23_HOU_001",
-        "name": "Access to basic amenities, household income, and tenure",
-        "description": "Household amenities, household income, and tenure by location for 2018 and 2023.",
+        "name": "Access to basic amenities, total household income, and tenure of household for households in occupied private dwellings, (RC, TALB, SA2, Health), 2018 and 2023 Censuses",
+        "description": "Access to basic amenities (total responses), total household income, and tenure of household (level 1) for households in occupied private dwellings, for regional councils, territorial authorities and Auckland local boards, statistical area 2, health regions, health districts, 2018 and 2023 Censuses.",
     },
     {
         "id": "CEN23_FHH_017",
-        "name": "Access to telecommunication systems, ethnicity, age, and gender",
-        "description": "Access to telecommunication systems by ethnicity, age, gender, location, and census year for 2013, 2018, and 2023.",
+        "name": "Access to telecommunication systems, ethnicity, age, and gender for people in households in occupied private dwellings, (RC, TALB, SA2, Health), 2013, 2018, and 2023 Censuses",
+        "description": "Access to telecommunication systems (total responses), ethnicity (grouped total responses level 1), age (life cycle groups), and gender for people in households in occupied private dwellings, for regional councils, territorial authorities and Auckland local boards, statistical area 2, health regions, health districts, 2013, 2018, and 2023 Censuses.",
     },
     {
         "id": "CEN23_EDU_003",
-        "name": "Highest qualification, industry, and gender",
-        "description": "Highest qualification and industry by gender, location, and census year for 2013, 2018, and 2023.",
+        "name": "Highest qualification, industry, and gender for the employed census usually resident population count aged 15 years and over, (RC, TALB, SA2, Health), 2013, 2018, and 2023 Censuses",
+        "description": "Highest qualification, industry (level 1), and gender for the employed census usually resident population count aged 15 years and over, for regional councils, territorial authorities and Auckland local boards, statistical area 2, health regions, health districts, 2013, 2018, and 2023 Censuses."
     },
     {
         "id": "CEN23_HAD_014",
-        "name": "Activity limitations, travel to education, and age",
-        "description": "Activity limitations and travel to education by age, location, and census year for 2018 and 2023.",
+        "name": "Activity limitations, main means of travel to education, and age for the census usually resident population count aged 5 years and over who are studying, (RC, TALB, Health), 2018 and 2023 Censuses",
+        "description": "Activity limitations, main means of travel to education, and age (5-year groups) for the census usually resident population count aged 5 years and over who are studying (part time or full time) in any educational institute, from early education (childcare) to tertiary education, for regional councils, territorial authorities and Auckland local boards, health regions, health districts, 2018 and 2023 Censuses."
     },
 ]
 
