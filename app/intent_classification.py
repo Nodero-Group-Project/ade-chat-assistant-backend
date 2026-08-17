@@ -72,7 +72,7 @@ def analyse_query(user_query: str) -> dict:
     completion = client.chat.completions.create(
         model="qwen/qwen3.6-27b",
         reasoning_format="parsed",
-        max_completion_tokens=2048,
+        max_completion_tokens=4096,
         messages=[
             {
                 "role": "system",
@@ -84,14 +84,24 @@ def analyse_query(user_query: str) -> dict:
 
     message = completion.choices[0].message
     
-    content = message.content or ""
-    
-    content = content.strip()
+    content = (message.content or "").strip()
+
+    # Models sometimes wrap an otherwise valid JSON response in Markdown.
+    if content.startswith("```json"):
+        content = content[len("```json"):].strip()
+    if content.endswith("```"):
+        content = content[:-3].strip()
 
     try:
         result = json.loads(content)
-    except json.JSONDecodeError:
-        return "Error: Failed to parse JSON from LLM response. Raw content: " + content
+    except json.JSONDecodeError as error:
+        finish_reason = completion.choices[0].finish_reason
+        return {
+            "error": "Failed to parse JSON from LLM response.",
+            "parse_error": str(error),
+            "finish_reason": finish_reason,
+            "raw_content": content,
+        }
     
     valid_intents = set(intents())
     valid_dataset_ids = {dataset["id"] for dataset in datasets()}
