@@ -4,6 +4,7 @@ This is a simple test script to connect to groq API server and get a response.
 
 from groq import Groq
 from dotenv import load_dotenv
+import api_structure
 import os
 import json
 

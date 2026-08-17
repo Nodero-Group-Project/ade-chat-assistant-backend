@@ -1,11 +1,15 @@
 import psycopg2
 from psycopg2.extras import RealDictCursor
 import csv
+from dotenv import load_dotenv
+import os
 
-CONNECTION_STRING = "postgresql://neondb_owner:npg_E1DosxFB9wpY@ep-bitter-sky-axnzj54r.c-4.us-east-2.aws.neon.tech/neondb?sslmode=require"
+load_dotenv()
+
+CONNECTION_STRING = os.getenv("DB_CONNECTION_STRING")
 
 def executeQuery(query):
-
+    
     connection = None
 
     try:
