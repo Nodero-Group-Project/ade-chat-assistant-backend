@@ -50,7 +50,3 @@ def query_llm(user_query: str, dataset: dict, analysis: dict) -> str:
     # Return the generated API URL or query
     print(completion.choices[0].message.content)
     return(completion.choices[0].message.content.strip())
-    
-
-# if __name__ == "__main__":
-#     query_llm("What is the average age of cigarette smokers in the database?")

@@ -164,6 +164,6 @@ def analyse_query(user_query: str) -> dict:
     return result
 
 if __name__ == "__main__":
-    query = "How many young Asian smokers were there in each year?"
+    query = "How many young Asian smokers were there in each year?" # Enter in a user query here, need to connect to front end
     result = analyse_query(query)
     print(json.dumps(result, indent=2))

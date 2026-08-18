@@ -50,7 +50,7 @@ async def report(question: str):
     return {
         "question": question,
         "analysis": analysis,
-        "selected_dataset": selected_dataset,
+        "selected_dataset": selected_dataset, # Selected dataset information to be passed on for retrieval
         "query_result": query_result,
     }
     
