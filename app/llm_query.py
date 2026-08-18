@@ -13,9 +13,10 @@ load_dotenv(os.path.join(os.path.dirname(__file__), ".env"))
 api_key = os.getenv("GROQ_API_KEY")
 client = Groq(api_key=api_key)
 
-# get
-
+# Query the LLM to convert a user query into an API URL
 def query_llm(user_query: str, dataset: dict, analysis: dict) -> str:
+    
+    # Build a prompt using the user's question and selected dataset
     prompt = f"""
     Convert the user query into a query for the selected dataset.
     
@@ -28,6 +29,7 @@ def query_llm(user_query: str, dataset: dict, analysis: dict) -> str:
     Return only the API URL
     """
 
+    # Ask the LLM to create a query for the selected dataset
     completion = client.chat.completions.create(
         model="qwen/qwen3.6-27b",
         reasoning_format="hidden",
@@ -45,6 +47,7 @@ def query_llm(user_query: str, dataset: dict, analysis: dict) -> str:
         ]
         
     ) 
+    # Return the generated API URL or query
     print(completion.choices[0].message.content)
     return(completion.choices[0].message.content.strip())
     

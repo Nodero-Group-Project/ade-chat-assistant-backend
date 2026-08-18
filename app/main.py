@@ -1,3 +1,8 @@
+"""
+Main application file for the FastAPI server.
+This file defines the API endpoints and handles incoming requests.
+"""
+
 from app.datasets import datasets
 from app import db
 from fastapi import FastAPI
@@ -11,10 +16,13 @@ from app.intent_classification import analyse_query
 app = FastAPI()
 REPORT_DIR = "exports"
 
+# Report endpoint
 @app.get("/report")
 async def report(question: str):
+    # Receive the user's question and analyse its intent
     analysis = analyse_query(question)
     
+    # Stop if no suitable dataset was selected
     if not analysis["selected_dataset_id"]:
         return {
             "question": question,
@@ -22,19 +30,23 @@ async def report(question: str):
             "data": [],
             "csvFile": None,
         }
+        
+    # Get the selected dataset using the ID returned by the LLM
     selected_dataset_id = analysis["selected_dataset_id"]
     
+    # Find the complete dataset information from datasets.py
     selected_dataset = next(
         dataset
         for dataset in datasets()
         if dataset["id"] == selected_dataset_id
     )
+    # Generate a query for the selected dataset
     query_result = llm_query.query_llm(
         user_query=question,
         dataset=selected_dataset,
         analysis=analysis
     )
-    
+    # Return the analysis, selected dataset, and generated query to the frontend
     return {
         "question": question,
         "analysis": analysis,

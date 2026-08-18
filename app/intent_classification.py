@@ -1,6 +1,9 @@
+"""
+Intent classification and dataset selection module.
+"""
+
 import json
 import os
-
 from dotenv import load_dotenv
 from groq import Groq
 from app.datasets import datasets, intents
@@ -9,10 +12,15 @@ load_dotenv(os.path.join(os.path.dirname(__file__), ".env"))
 
 client = Groq(api_key=os.getenv("GROQ_API_KEY"))
 
+
+# Analyze the user query and classify it into an intent and select the best dataset
 def analyse_query(user_query: str) -> dict:
+    
+    # Load candidate datasets and valid intents
     candidate_datasets = datasets()
     valid_intents = intents()
     
+    # Create a prompt containing the user query and dataset information
     system_prompt = f"""
     You are a query analysis and dataset selection model.
     
@@ -69,6 +77,7 @@ def analyse_query(user_query: str) -> dict:
     }}
     """
     
+    # Send the user query and candidate datasets to the LLM
     completion = client.chat.completions.create(
         model="qwen/qwen3.6-27b",
         reasoning_format="parsed",
@@ -82,17 +91,21 @@ def analyse_query(user_query: str) -> dict:
         ],
     )
 
+
+    # Extract the LLMs response
     message = completion.choices[0].message
-    
     content = (message.content or "").strip()
 
     # Models sometimes wrap an otherwise valid JSON response in Markdown.
+    # Remove any Markdown formatting before attempting to parse the JSON.
     if content.startswith("```json"):
         content = content[len("```json"):].strip()
     if content.endswith("```"):
         content = content[:-3].strip()
 
+    # Error handling for JSON parsing
     try:
+        # Convert the JSON text into a Python dictionary
         result = json.loads(content)
     except json.JSONDecodeError as error:
         finish_reason = completion.choices[0].finish_reason
@@ -104,6 +117,8 @@ def analyse_query(user_query: str) -> dict:
         }
     
     valid_intents = set(intents())
+    
+    # Get the IDs of valid datasets form datasets.py
     valid_dataset_ids = {dataset["id"] for dataset in datasets()}
     
     result.setdefault("confidence", 0.0)
@@ -111,13 +126,17 @@ def analyse_query(user_query: str) -> dict:
     result.setdefault("ranked_datasets", [])
     result.setdefault("selection_confidence", 0.0)
     
+    # Keep only dataset rankings with valid dataset IDs
     valid_rankings = []
     
+    
+    # Check each candidate returned by the LLM
     for candidate in result.get("ranked_datasets", []):
         dataset_id = candidate.get("dataset_id")
         score = candidate.get("score", 0.0)
         reason = candidate.get("reason", "")
         
+        # Ignore datasets that do no exist in datasets.py
         if dataset_id in valid_dataset_ids:
             valid_rankings.append({
                 "dataset_id": dataset_id,
@@ -125,15 +144,20 @@ def analyse_query(user_query: str) -> dict:
                 "reason": reason
             })
     
+    # Sort datasets from highest score to lowest score
     valid_rankings.sort(key=lambda x: x["score"], reverse=True)
     
+    # Store the validated rankings in the result
     result["ranked_datasets"] = valid_rankings
     
+    
+    # Select the highest scoreing valid dataset
     if valid_rankings:
         best_dataset = valid_rankings[0]
         result["selected_dataset_id"] = best_dataset["dataset_id"]
         result["selection_confidence"] = best_dataset["score"]
     else:
+        # No suitable dataset was found
         result["selected_dataset_id"] = None
         result["selection_confidence"] = 0.0
     
@@ -141,7 +165,5 @@ def analyse_query(user_query: str) -> dict:
 
 if __name__ == "__main__":
     query = "How many young Asian smokers were there in each year?"
-    
     result = analyse_query(query)
-    
     print(json.dumps(result, indent=2))
