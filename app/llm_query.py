@@ -4,7 +4,7 @@ This is a simple test script to connect to groq API server and get a response.
 
 from groq import Groq
 from dotenv import load_dotenv
-import api_structure
+# import api_structure
 import os
 import json
 
@@ -15,6 +15,8 @@ client = Groq(api_key=api_key)
 
 # Query the LLM to convert a user query into an API URL
 def query_llm(user_query: str, dataset: dict, analysis: dict) -> str:
+    
+    # structure = api_structure.cigarette_smoking()
     
     # Build a prompt using the user's question and selected dataset
     prompt = f"""
