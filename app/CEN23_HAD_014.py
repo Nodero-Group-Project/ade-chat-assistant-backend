@@ -27,7 +27,6 @@ https://api.data.stats.govt.nz/rest/data/STATSNZ,CEN23_FHH_017,1.0/YEAR_CODE.ARE
 DIMENSION CODES:
 
 Year:
-2013 = 2013
 2018 = 2018
 2023 = 2023
 
@@ -93,7 +92,7 @@ DEFAULTS:
 - If no year is specified, use 2023.
 
 YEAR RULE:
-- If the requested year is one of 2013, 2018, or 2023, use that year.
+- If the requested year is one of 2018, or 2023, use that year.
 - If the requested year is unavailable, return an ERROR. Do NOT silently change the year.
 
 """
