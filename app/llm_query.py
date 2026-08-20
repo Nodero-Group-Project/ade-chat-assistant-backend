@@ -4,7 +4,7 @@ This is a simple test script to connect to groq API server and get a response.
 
 from groq import Groq
 from dotenv import load_dotenv
-import api_structure
+from app.prompts import education_structure
 import os
 
 load_dotenv()
@@ -16,11 +16,11 @@ client = Groq(api_key=api_key)
 
 def query_llm(user_query):
 
-    structure = api_structure.cigarette_smoking()
+    structure = education_structure.prompt()
 
     completion = client.chat.completions.create(
         model="qwen/qwen3.6-27b",
-        reasoning_format="hidden",
+        # reasoning_format="hidden",
         messages=[
             {
                 "role": "system",  # Define role of message sender (user, system, etc)
@@ -39,4 +39,4 @@ def query_llm(user_query):
     
 
 if __name__ == "__main__":
-    query_llm("how many young Asian smokers exists in each year?")
+    print(query_llm("how many people can get certificated more than bachelor in each year?"))
