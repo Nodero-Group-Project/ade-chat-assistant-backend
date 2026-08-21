@@ -1,4 +1,4 @@
-def cigarette_smoking():
+def prompt():
     return """
 Convert the user's English question into an API URL.
 
