@@ -39,4 +39,4 @@ def query_llm(user_query):
     
 
 if __name__ == "__main__":
-    print(query_llm("how many people can get certificated more than bachelor in each year?"))
+    print(query_llm("how many people can get bachelor in mining and farming in each year?"))

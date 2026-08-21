@@ -8,7 +8,7 @@ ERROR: <reason>
 Never invent codes or values.
 
 URL format:
-https://api.data.stats.govt.nz/rest/data/STATSNZ,CEN23_EDU_003,1.0/{Year}.{Location}.{Qualification}.{Industry}.{Age}.{Gender}?dimensionAtObservation=AllDimensions
+https://api.data.stats.govt.nz/rest/data/STATSNZ,CEN23_EDU_003,1.0/{Year}.{Location}.{Qualification}.{Industry}.{Gender}?dimensionAtObservation=AllDimensions
 
 Use these codes for parameters in the URL:
 
@@ -61,13 +61,6 @@ N = Administrative / Support Services
 T = Not Elsewhere Included
 I = Transport / Postal / Warehousing
 
-Age:
-2 = 15-29
-3 = 30-64
-4 = 65+
-5 = median
-99 = total
-
 Gender:
 1 = male
 2 = female
@@ -76,13 +69,11 @@ Gender:
 
 Rules:
 
-* "youth" / "young people" = age 2
 * "men" / "male" = gender 1
 * "women" / "female" = gender 2
 * "educated" = Qualification 9999
 * "uneducated" = Qualification 000
 * If no industry is specified = 9
-* If no age is specified = 99
 * If no gender is specified = 99
 * If no specific location or area is given = 9999
 * Multiple values use "+", e.g. Male and Female = 1+2.
