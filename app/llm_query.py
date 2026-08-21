@@ -4,7 +4,7 @@ This is a simple test script to connect to groq API server and get a response.
 
 from groq import Groq
 from dotenv import load_dotenv
-from app.prompts import education
+from app.prompts import household_income
 import os
 
 load_dotenv()
@@ -16,7 +16,7 @@ client = Groq(api_key=api_key)
 
 def query_llm(user_query):
 
-    structure = education.prompt()
+    structure = household_income.prompt()
 
     completion = client.chat.completions.create(
         model="qwen/qwen3.6-27b",
@@ -39,4 +39,4 @@ def query_llm(user_query):
     
 
 if __name__ == "__main__":
-    print(query_llm("how many people can get bachelor in mining and farming in each year?"))
+    query_llm("how many house owners with more than 70000 household income and their house having kitchen and toilet we have?")
