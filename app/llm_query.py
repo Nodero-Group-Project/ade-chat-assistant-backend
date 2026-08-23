@@ -4,27 +4,42 @@ This is a simple test script to connect to groq API server and get a response.
 
 from groq import Groq
 from dotenv import load_dotenv
-from app.prompts import household_income
+# import api_structure
 import os
+import json
 
-load_dotenv()
+load_dotenv(os.path.join(os.path.dirname(__file__), ".env"))
 
 api_key = os.getenv("GROQ_API_KEY")
 client = Groq(api_key=api_key)
 
-# get
+# Query the LLM to convert a user query into an API URL
+def query_llm(user_query: str, dataset: dict, analysis: dict) -> str:
+    
+    # structure = api_structure.cigarette_smoking()
+    
+    # Build a prompt using the user's question and selected dataset
+    prompt = f"""
+    Convert the user query into a query for the selected dataset.
+    
+    User query: {user_query}
+    
+    Selected dataset: {json.dumps(dataset, indent=2)}
+    
+    Intent and extracted entities: {json.dumps(analysis, indent=2)}
+    
+    Return only the API URL
+    """
 
-def query_llm(user_query):
-
-    structure = household_income.prompt()
-
+    # Ask the LLM to create a query for the selected dataset
     completion = client.chat.completions.create(
         model="qwen/qwen3.6-27b",
-        # reasoning_format="hidden",
+        reasoning_format="hidden",
+        max_completion_tokens=1024,
         messages=[
             {
                 "role": "system",  # Define role of message sender (user, system, etc)
-                "content": structure  # Enter prompt here
+                "content": prompt  # Enter prompt here
             }
             ,
             {
@@ -34,9 +49,6 @@ def query_llm(user_query):
         ]
         
     ) 
-
-    return(completion.choices[0].message.content)
-    
-
-if __name__ == "__main__":
-    query_llm("how many house owners with more than 70000 household income and their house having kitchen and toilet we have?")
+    # Return the generated API URL or query
+    print(completion.choices[0].message.content)
+    return(completion.choices[0].message.content.strip())
