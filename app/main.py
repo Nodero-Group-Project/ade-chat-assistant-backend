@@ -4,7 +4,7 @@ This file defines the API endpoints and handles incoming requests.
 """
 
 import datasets
-# from app import db
+from services import stat_nz
 from fastapi import FastAPI
 from fastapi.responses import FileResponse
 from datetime import datetime
@@ -47,12 +47,14 @@ async def report(q: str):
         analysis=analysis
     )
     # Return the analysis, selected dataset, and generated query to the frontend
-    return {
-        "question": q,
-        "analysis": analysis,
-        "selected_dataset": selected_dataset, # Selected dataset information to be passed on for retrieval
-        "query_result": query_result,
-    }
+    # return {
+    #     "question": q,
+    #     "analysis": analysis,
+    #     "selected_dataset": selected_dataset, # Selected dataset information to be passed on for retrieval
+    #     "query_result": query_result,
+    # }
+    
+    return stat_nz.get(query_result)
     
     sql_command = llm_query.query_llm(question, classification)
     print(sql_command)

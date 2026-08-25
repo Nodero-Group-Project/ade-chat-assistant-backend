@@ -1,6 +1,5 @@
 import urllib.request
 import urllib.error
-import json
 import os
 from dotenv import load_dotenv
 
