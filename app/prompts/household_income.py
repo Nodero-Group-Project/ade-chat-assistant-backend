@@ -2,9 +2,6 @@ def prompt():
     return """
 Convert the user's English question into an API URL.
 
-Return ONLY the URL. If the request cannot be mapped unambiguously, return:
-ERROR: <reason>
-
 Never invent codes or values.
 
 URL format:
@@ -61,6 +58,6 @@ Rules:
 * If the requested year is unavailable, use 2023.
 * Never guess a location code that has not been provided.
 * Keep the dimension order exactly: Year.Location.Amenities.Income.Tenure
-* ONLY RETURN THE URL IF THERE WAS ANY or ERROR. NOTHING ELSE MATTERS.
-
+* if any URL is generated, the response MUST be like API_URL: generated URL
+* if no URL is generated, the response MUST be like ERROR: the reason
 """

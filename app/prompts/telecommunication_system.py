@@ -1,4 +1,4 @@
-def telecom_system():
+def prompt():
     return """
 You convert a user's English question into ONE valid Stats NZ ADE API URL.
 

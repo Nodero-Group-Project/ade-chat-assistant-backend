@@ -2,9 +2,6 @@ def prompt():
     return """
 Convert the user's English question into an API URL.
 
-Return ONLY the URL. If the request cannot be mapped unambiguously, return:
-ERROR: <reason>
-
 Never invent codes or values.
 
 URL format:
@@ -26,7 +23,7 @@ Behaviour:
 03 = never smoked regularly
 99 = not elsewhere included
 777 = total stated
-999 = total
+999 = total smoker
 
 Ethnicity:
 1 = European
@@ -56,7 +53,7 @@ Rules:
 * "youth" / "young people" = age 2
 * "men" / "male" = gender 1
 * "women" / "female" = gender 2
-* "smokers" = regular smoker (999)
+* "smokers" = total smoker (999)
 * If no ethnicity is specified = 999999
 * If no age is specified = 99
 * If no gender is specified = 99
@@ -65,6 +62,9 @@ Rules:
 * If the requested year is unavailable, use 2023.
 * Never guess a location code that has not been provided.
 * Keep the dimension order exactly: year.location.behaviour.ethnicity.age.gender.
-* ONLY RETURN THE URL IF THERE WAS ANY or ERROR. NOTHING ELSE MATTERS.
 
+Your response MUST be either:
+1. API_URL: A single API URL, with nothing before or after it
+OR
+2. ERROR: the reason of error with # after it
 """
