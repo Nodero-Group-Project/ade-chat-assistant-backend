@@ -62,9 +62,7 @@ Rules:
 * If the requested year is unavailable, use 2023.
 * Never guess a location code that has not been provided.
 * Keep the dimension order exactly: year.location.behaviour.ethnicity.age.gender.
-
-Your response MUST be either:
-1. API_URL: A single API URL, with nothing before or after it
-OR
-2. ERROR: the reason of error with # after it
+* Your response MUST be in these formats:
+    if there is a URL -> API_URL: the url
+    if no URL -> ERROR: the reason
 """

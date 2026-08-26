@@ -58,6 +58,7 @@ Rules:
 * If the requested year is unavailable, use 2023.
 * Never guess a location code that has not been provided.
 * Keep the dimension order exactly: Year.Location.Amenities.Income.Tenure
-* if any URL is generated, the response MUST be like API_URL: generated URL
-* if no URL is generated, the response MUST be like ERROR: the reason
+* Your response MUST be in these formats:
+    if there is a URL -> API_URL:the url
+    if no URL -> ERROR:the reason
 """
