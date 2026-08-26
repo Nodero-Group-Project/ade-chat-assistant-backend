@@ -80,6 +80,8 @@ Rules:
 * If the requested year is unavailable, use 2023.
 * Never guess a location code that has not been provided.
 * Keep the dimension order exactly: Year.Location.Qualification.Industry.Age.Gender.
-* ONLY RETURN THE URL IF THERE WAS ANY or ERROR. NOTHING ELSE MATTERS.
+* Your response MUST be in these formats:
+    if there is a URL -> API_URL:the url
+    if no URL -> ERROR:the reason
 
 """

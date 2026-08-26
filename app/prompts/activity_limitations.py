@@ -1,4 +1,4 @@
-def activity_limit():
+def prompt():
     return """
 
 You convert a user's English question into ONE valid Stats NZ ADE API URL.
@@ -8,10 +8,9 @@ Your task is to:
 2. Identify the requested value for each of the five API dimensions
 3. Convert each requested value into its corresponding code using ONLY the codes provided below.
 4. Replace EVERY placeholder in the URL with an actual code.
-5. Return ONLY the completed URL.
-
-If the question cannot be mapped unambiguously to the available codes, return:
-ERROR: <reason>
+5. Your response MUST be in these formats:
+    if there is a URL -> API_URL:the url
+    if no URL -> ERROR:the reason
 
 Important:
 - NEVER invent a code or value.

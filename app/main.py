@@ -3,32 +3,31 @@ Main application file for the FastAPI server.
 This file defines the API endpoints and handles incoming requests.
 """
 
-from app.datasets import datasets
-from app import db
+import datasets
+from services import stat_nz
 from fastapi import FastAPI
 from fastapi.responses import FileResponse
-from datetime import datetime
 from fastapi import HTTPException
 import os
-from app import llm_query
-from app.intent_classification import analyse_query
+import llm_query
+from intent_classification import analyse_query
 
 app = FastAPI()
 REPORT_DIR = "exports"
 
 # Report endpoint
 @app.get("/report")
-async def report(question: str):
+async def report(q: str):
     # Receive the user's question and analyse its intent
-    analysis = analyse_query(question)
+    analysis = analyse_query(q)
     
     # Stop if no suitable dataset was selected
     if not analysis["selected_dataset_id"]:
         return {
-            "question": question,
-            "analysis": analysis,
-            "data": [],
-            "csvFile": None,
+            "success": False,
+            "question": q,
+            "selected_dataset": "",
+            "message": "Unsupported question. Please ask me about something real!"
         }
         
     # Get the selected dataset using the ID returned by the LLM
@@ -37,45 +36,52 @@ async def report(question: str):
     # Find the complete dataset information from datasets.py
     selected_dataset = next(
         dataset
-        for dataset in datasets()
+        for dataset in datasets.datasets()
         if dataset["id"] == selected_dataset_id
     )
     # Generate a query for the selected dataset
     query_result = llm_query.query_llm(
-        user_query=question,
+        user_query=q,
         dataset=selected_dataset,
         analysis=analysis
     )
-    # Return the analysis, selected dataset, and generated query to the frontend
-    return {
-        "question": question,
-        "analysis": analysis,
-        "selected_dataset": selected_dataset, # Selected dataset information to be passed on for retrieval
-        "query_result": query_result,
-    }
-    
-    sql_command = llm_query.query_llm(question, classification)
-    print(sql_command)
 
-    data = db.executeQuery(sql_command)
-
-    if not data:
+    # if LLN can translate the question to URL
+    if query_result["success"]:
+        # get data from stat NZ
+        # statNZ api needs format=jsondata to return data in json format
+        statistic_data = stat_nz.get(query_result["URL"]+"&format=jsondata")
+        if statistic_data:
+            return{
+                "success": True,
+                "question": q,
+                "selected_dataset": selected_dataset,  # Selected dataset information to be passed on for retrieval
+                "data": statistic_data
+            }
+        else:
+            return{
+                "success": False,
+                "question": q,
+                "selected_dataset": selected_dataset,
+                "message": "No data retrieved. Please try again later."
+            }
+    else:
         return {
-            "classification": classification,
-            "data": [],
-            "csvFile": None,
+            "success": False,
+            "question": q,
+            "selected_dataset": selected_dataset,
+            "message": query_result["message"]
         }
 
-    filename = datetime.now().strftime("%Y%m%d_%H%M%S_%f") + ".csv"
-    file_path = os.path.join(REPORT_DIR, filename)
 
-    db.write_csv(data,file_path)
 
-    return {
-        "classification": classification,
-        "data":data,
-        "csvFile":filename
-    }
+    # Return the analysis, selected dataset, and generated query to the frontend
+    # return {
+    #     "question": q,
+    #     "analysis": analysis,
+    #     "selected_dataset": selected_dataset, # Selected dataset information to be passed on for retrieval
+    #     "query_result": query_result,
+    # }
 
 @app.get("/download")
 async def download(filename: str):

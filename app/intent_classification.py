@@ -6,7 +6,7 @@ import json
 import os
 from dotenv import load_dotenv
 from groq import Groq
-from app.datasets import datasets, intents
+from datasets import datasets, intents
 
 load_dotenv(os.path.join(os.path.dirname(__file__), ".env"))
 
