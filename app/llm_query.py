@@ -14,7 +14,7 @@ api_key = os.getenv("GROQ_API_KEY")
 client = Groq(api_key=api_key)
 
 # Query the LLM to convert a user query into an API URL
-def query_llm(user_query: str, dataset: dict, analysis: dict):
+def query_llm(user_query: str, dataset: dict):
 
     # Build a prompt using the user's question and selected dataset
     # prompt = f"""
