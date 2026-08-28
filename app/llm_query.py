@@ -16,20 +16,9 @@ client = Groq(api_key=api_key)
 # Query the LLM to convert a user query into an API URL
 def query_llm(user_query: str, dataset: dict):
 
-    # Build a prompt using the user's question and selected dataset
-    # prompt = f"""
-    # Convert the user query into a query for the selected dataset.
-    #
-    # User query: {user_query}
-    #
-    # Selected dataset: {json.dumps(dataset, indent=2)}
-    #
-    # Intent and extracted entities: {json.dumps(analysis, indent=2)}
-    #
-    # Return only the API URL
-    # """
     prompt = ""
 
+    # select an appropriate prompt depends on selected dataset
     match dataset["id"]:
         case "CEN23_HAD_020":
             prompt = cigarette_smoking.prompt()
@@ -44,7 +33,7 @@ def query_llm(user_query: str, dataset: dict):
 
     print(prompt)
 
-    # Ask the LLM to create a query for the selected dataset
+    # Ask the LLM to create an URL for the selected dataset
     completion = client.chat.completions.create(
         model="qwen/qwen3.6-27b",
         reasoning_format="hidden",
@@ -65,18 +54,22 @@ def query_llm(user_query: str, dataset: dict):
 
     result = completion.choices[0].message.content.strip()
 
+    # if LLM generates URL
     if result.startswith("API_URL"):
         return {
             "success": True,
             "URL": result.replace("API_URL:", "")
         }
     else:
+        # if LLM generates ERROR
         if result.startswith("ERROR"):
             return {
                 "success": False,
                 "message":result.replace("ERROR:", "")
             }
         else:
+            # here is where the LLM generate nothing. Neither URL nor ERROR
+            # because of token limitation, or any other unknown reason.
             return {
                 "success": False,
                 "message":"No data found. Please try again later."
