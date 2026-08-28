@@ -27,7 +27,7 @@ async def report(q: str):
             "success": False,
             "question": q,
             "selected_dataset": "",
-            "message": "Unsupported question. Please ask me about something real!"
+            "message": "Unfortunately we can't provide any data for your question."
         }
         
     # Get the selected dataset using the ID returned by the LLM
@@ -39,18 +39,21 @@ async def report(q: str):
         for dataset in datasets.datasets()
         if dataset["id"] == selected_dataset_id
     )
-    # Generate a query for the selected dataset
+
+    # Try to generate a valid StatNZ URL for user question.
     query_result = llm_query.query_llm(
         user_query=q,
-        dataset=selected_dataset,
-        analysis=analysis
+        dataset=selected_dataset
     )
 
     # if LLN can translate the question to URL
     if query_result["success"]:
+
         # get data from stat NZ
-        # statNZ api needs format=jsondata to return data in json format
+        # statNZ api needs "format=jsondata" to return data in json format
         statistic_data = stat_nz.get(query_result["URL"]+"&format=jsondata")
+
+        # if we get data from StatNZ
         if statistic_data:
             return{
                 "success": True,
@@ -59,6 +62,7 @@ async def report(q: str):
                 "data": statistic_data
             }
         else:
+            # if statNZ doesn't return data
             return{
                 "success": False,
                 "question": q,
@@ -66,6 +70,7 @@ async def report(q: str):
                 "message": "No data retrieved. Please try again later."
             }
     else:
+        # if LLM couldn't find any URL we return the reason
         return {
             "success": False,
             "question": q,
@@ -73,15 +78,6 @@ async def report(q: str):
             "message": query_result["message"]
         }
 
-
-
-    # Return the analysis, selected dataset, and generated query to the frontend
-    # return {
-    #     "question": q,
-    #     "analysis": analysis,
-    #     "selected_dataset": selected_dataset, # Selected dataset information to be passed on for retrieval
-    #     "query_result": query_result,
-    # }
 
 @app.get("/download")
 async def download(filename: str):

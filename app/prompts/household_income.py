@@ -35,6 +35,7 @@ Income:
 5 = $70,001 to $100,000
 6 = $100,001 to $150,000
 7 = $150,001 to $200,000
+8 = $200,001 or more
 99 = Total - total household income
 
 Tenure:
