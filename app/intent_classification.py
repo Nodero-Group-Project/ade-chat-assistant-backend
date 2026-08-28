@@ -160,7 +160,9 @@ def analyse_query(user_query: str) -> dict:
         # No suitable dataset was found
         result["selected_dataset_id"] = None
         result["selection_confidence"] = 0.0
-    
+
+    print(result)
+
     return result
 
 if __name__ == "__main__":

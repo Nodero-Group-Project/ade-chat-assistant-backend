@@ -54,6 +54,8 @@ def query_llm(user_query: str, dataset: dict):
 
     result = completion.choices[0].message.content.strip()
 
+    print(result)
+
     # if LLM generates URL
     if result.startswith("API_URL"):
         return {
