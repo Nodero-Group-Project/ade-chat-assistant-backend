@@ -57,3 +57,6 @@ desktop.ini
 
 # Exports folder
 exports/
+
+# Test questions for classification - Wiremu
+app/testquestions.txt
