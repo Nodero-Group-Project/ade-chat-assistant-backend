@@ -20,7 +20,16 @@ REPORT_DIR = "exports"
 async def report(q: str):
     # Receive the user's question and analyse its intent
     analysis = analyse_query(q)
-    
+
+    # Do not retrieve data when the selected dataset is not a strong match.
+    if analysis.get("selection_confidence", 0.0) < 0.8:
+        return {
+            "success": False,
+            "question": q,
+            "selected_dataset": "",
+            "message": "Low confidence score. Please rephrase your question with more detail."
+        }
+
     # Stop if no suitable dataset was selected
     if not analysis["selected_dataset_id"]:
         return {
