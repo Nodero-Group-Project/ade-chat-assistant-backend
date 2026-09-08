@@ -37,16 +37,6 @@ async def report(q: str):
             "success": False,
             "question": q,
             "selected_dataset": "",
-            "confidence": analysis.get("selection_confidence"),
-            "message": "Low confidence score. Please rephrase your question with more detail."
-        }
-
-    # Stop if no suitable dataset was selected
-    if not analysis["selected_dataset_id"]:
-        return {
-            "success": False,
-            "question": q,
-            "selected_dataset": "",
             "message": "Unfortunately we can't provide any data for your question."
         }
         
