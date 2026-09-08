@@ -35,7 +35,8 @@ def query_llm(user_query: str, dataset: dict):
 
     # Ask the LLM to create an URL for the selected dataset
     completion = client.chat.completions.create(
-        model="qwen/qwen3.6-27b",
+        # model="qwen/qwen3.8-27b",
+        model="openai/gpt-oss-120b",
         reasoning_format="hidden",
         max_completion_tokens=4096,
         messages=[

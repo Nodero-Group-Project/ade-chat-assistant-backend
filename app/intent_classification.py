@@ -79,7 +79,8 @@ def analyse_query(user_query: str) -> dict:
     
     # Send the user query and candidate datasets to the LLM
     completion = client.chat.completions.create(
-        model="qwen/qwen3.6-27b",
+        # model="qwen/qwen3.8-27b",
+        model="openai/gpt-oss-120b",
         reasoning_format="parsed",
         max_completion_tokens=4096,
         messages=[

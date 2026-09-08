@@ -11,8 +11,18 @@ from fastapi import HTTPException
 import os
 import llm_query
 from intent_classification import analyse_query
+from fastapi.middleware.cors import CORSMiddleware
 
 app = FastAPI()
+
+# please replace * in allow_origins with the frontend URL
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],  # Allow any origin
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
+
 REPORT_DIR = "exports"
 
 # Report endpoint
