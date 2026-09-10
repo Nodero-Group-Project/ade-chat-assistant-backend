@@ -3,20 +3,20 @@ Main application file for the FastAPI server.
 This file defines the API endpoints and handles incoming requests.
 """
 
-import datasets
-from services import stat_nz
+from app.datasets import datasets
+from app.services import stat_nz
 from fastapi import FastAPI
 from fastapi.responses import FileResponse
 from fastapi import HTTPException
 import os
-import llm_query
-from intent_classification import analyse_query
+from app.llm_query import query_llm
+from app.intent_classification import analyse_query
 from fastapi.middleware.cors import CORSMiddleware
 
-app = FastAPI()
+web = FastAPI()
 
 # please replace * in allow_origins with the frontend URL
-app.add_middleware(
+web.add_middleware(
     CORSMiddleware,
     allow_origins=["*"],  # Allow any origin
     allow_methods=["*"],
@@ -26,32 +26,32 @@ app.add_middleware(
 REPORT_DIR = "exports"
 
 # Report endpoint
-@app.get("/report")
+@web.get("/report")
 async def report(q: str):
     # Receive the user's question and analyse its intent
     analysis = analyse_query(q)
 
     # Do not retrieve data when the selected dataset is not a strong match.
-    if analysis.get("selection_confidence", 0.0) < 0.6:
+    if analysis.get("selection_confidence", 0.0) < 0.5:
         return {
             "success": False,
             "question": q,
             "selected_dataset": "",
             "message": "Unfortunately we can't provide any data for your question."
         }
-        
+
     # Get the selected dataset using the ID returned by the LLM
     selected_dataset_id = analysis["selected_dataset_id"]
-    
+
     # Find the complete dataset information from datasets.py
     selected_dataset = next(
         dataset
-        for dataset in datasets.datasets()
+        for dataset in datasets()
         if dataset["id"] == selected_dataset_id
     )
 
     # Try to generate a valid StatNZ URL for user question.
-    query_result = llm_query.query_llm(
+    query_result = query_llm(
         user_query=q,
         dataset=selected_dataset
     )
@@ -89,7 +89,7 @@ async def report(q: str):
         }
 
 
-@app.get("/download")
+@web.get("/download")
 async def download(filename: str):
     file_path = os.path.join(REPORT_DIR, filename)
 
