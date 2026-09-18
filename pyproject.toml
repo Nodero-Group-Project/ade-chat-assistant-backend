@@ -9,4 +9,9 @@ dependencies = [
     "groq>=1.6.0",
     "nltk>=3.10.1",
     "psycopg2-binary>=2.9.12",
+    "pytest>=9.1.1",
+    "pytest-asyncio>=1.4.0",
 ]
+
+[tool.fastapi]
+entrypoint = "app.main:web"
