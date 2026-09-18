@@ -9,7 +9,6 @@ from app.prompts import cigarette_smoking,household_income,telecommunication_sys
 import json
 
 load_dotenv()
-
 api_key = os.getenv("GROQ_API_KEY")
 client = Groq(api_key=api_key)
 
@@ -77,3 +76,4 @@ def query_llm(user_query: str, dataset: dict):
                 "success": False,
                 "message":"No data found. Please try again later."
             }
+
