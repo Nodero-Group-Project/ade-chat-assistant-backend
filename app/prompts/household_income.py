@@ -14,8 +14,23 @@ Year:
 
 Location:
 9999 = regional council
-99999 = health region/health district
-999999 = territorial authority/Auckland local board
+1 = Northland
+2 = Auckland
+3 = Waikato
+4 = Bay of Plenty
+5 = Gisborne
+6 = Hawke's Bay
+7 = Taranaki
+8 = ManawatÅ«-Whanganui
+9 = Wellington
+12 = West Coast
+13 = Canterbury
+14 = Otago
+15 = Southland
+16 = Tasman
+17 = Nelson
+18 = Marlborough
+99 = Area Outside
 
 Amenities:
 0 = None of these

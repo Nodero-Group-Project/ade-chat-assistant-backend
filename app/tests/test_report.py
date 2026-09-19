@@ -51,7 +51,7 @@ async def test_report_household_result(mock_analyse_query):
         "selected_dataset_id": None
     }
 
-    question = "how many house owners with more than 200 thousand income exists? their house should have sink, toilet and refrigerator."
+    question = "how many house owners with more than 200 thousand income exists in Tasman? their house should have sink, toilet and refrigerator."
 
     result = await report(question)
 
@@ -65,9 +65,9 @@ async def test_report_household_result(mock_analyse_query):
     assert ((result_success == True) and
             (result_question == question) and
             (result_dataset == "CEN23_HOU_001") and
-            (147048 == result_data_1) and
-            (147084 == result_data_2) and
-            (147156 == result_data_3))
+            (1290 == result_data_1) and
+            (1287 == result_data_2) and
+            (1290 == result_data_3))
 
 @pytest.mark.asyncio
 @patch("app.main.report")
@@ -100,7 +100,6 @@ async def test_report_smoking_result(mock_analyse_query):
     }
 
     question = "Any information about the number of asian men under 30 which leave smoking in 2013?"
-
     result = await report(question)
 
     result_success = result["success"]
