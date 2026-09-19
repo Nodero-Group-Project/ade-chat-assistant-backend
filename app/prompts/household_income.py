@@ -21,7 +21,7 @@ Location:
 5 = Gisborne
 6 = Hawke's Bay
 7 = Taranaki
-8 = ManawatÅ«-Whanganui
+8 = Manawatu / Whanganui
 9 = Wellington
 12 = West Coast
 13 = Canterbury

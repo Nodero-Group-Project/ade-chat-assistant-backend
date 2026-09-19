@@ -29,7 +29,7 @@ async def test_report_education_result(mock_analyse_query):
         "selected_dataset_id": None
     }
 
-    question = "how many student hold bachelor in 2018?"
+    question = "how many student which was living in auckland hold bachelor in 2018?"
 
     result = await report(question)
 
@@ -41,7 +41,7 @@ async def test_report_education_result(mock_analyse_query):
     assert ((result_success == True) and
             (result_question == question) and
             (result_dataset == "CEN23_EDU_003") and
-            (407571 == result_data))
+            (170514 == result_data))
 
 @pytest.mark.asyncio
 @patch("app.main.report")

@@ -29,26 +29,24 @@ Year:
 2023 = 2023
 
 Area:
-9999 = Total - New Zealand by regional council
-99999 = Total - New Zealand by health region/health district
-999999 = Total - New Zealand by territorial authority and Auckland local board/SA2
-01 = Northland Region
-02 = Auckland Region
-03 = Waikato Region
-04 = Bay of Plenty Region
-05 = Gisborne Region
-06 = Hawke's Bay Region
-07 = Taranaki Region
-08 = Manawatū-Whanganui Region
-09 = Wellington Region
-16 = Tasman Region
-17 = Nelson Region
-18 = Marlborough Region
-12 = West Coast Region
-13 = Canterbury Region
-14 = Otago Region
-15 = Southland Region
-99 = Area Outside Region
+9999 = regional council
+1 = Northland
+2 = Auckland
+3 = Waikato
+4 = Bay of Plenty
+5 = Gisborne
+6 = Hawke's Bay
+7 = Taranaki
+8 = Manawatu / Whanganui
+9 = Wellington
+12 = West Coast
+13 = Canterbury
+14 = Otago
+15 = Southland
+16 = Tasman
+17 = Nelson
+18 = Marlborough
+99 = Area Outside
 
 ATD (Access to telecommunication systems):
 99 = Total - access to telecommunication systems
