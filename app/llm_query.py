@@ -6,10 +6,8 @@ from groq import Groq
 from dotenv import load_dotenv
 import os
 from app.prompts import cigarette_smoking,household_income,telecommunication_system,education,activity_limitations
-import json
 
 load_dotenv()
-
 api_key = os.getenv("GROQ_API_KEY")
 client = Groq(api_key=api_key)
 
@@ -33,7 +31,7 @@ def query_llm(user_query: str, dataset: dict):
 
     print(prompt)
 
-    # Ask the LLM to create an URL for the selected dataset
+    # Ask the LLM to create a URL for the selected dataset
     completion = client.chat.completions.create(
         # model="qwen/qwen3.8-27b",
         model="openai/gpt-oss-120b",
@@ -77,3 +75,4 @@ def query_llm(user_query: str, dataset: dict):
                 "success": False,
                 "message":"No data found. Please try again later."
             }
+

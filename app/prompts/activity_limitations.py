@@ -21,7 +21,7 @@ Important:
 - Return NOTHING except the completed URL or an ERROR message.
 
 URL TEMPLATE:
-https://api.data.stats.govt.nz/rest/data/STATSNZ,CEN23_FHH_017,1.0/YEAR_CODE.AREA_CODE.ACT_CODE.TED_CODE.AGE_CODE?dimensionAtObservation=AllDimensions
+https://api.data.stats.govt.nz/rest/data/STATSNZ,CEN23_HAD_014,1.0/YEAR_CODE.AREA_CODE.ACT_CODE.TED_CODE.AGE_CODE?dimensionAtObservation=AllDimensions
 
 DIMENSION CODES:
 

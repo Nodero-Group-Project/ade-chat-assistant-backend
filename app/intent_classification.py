@@ -50,7 +50,7 @@ def analyse_query(user_query: str) -> dict:
     
     DO NOT invent dataset IDs
     Only use UDs from the candidate dataset list provided.
-    A dataset should recieve a low score if it cannot answer the user's query or if it is missing important entities or metrics.
+    A dataset should receive a low score if it cannot answer the user's query or if it is missing important entities or metrics.
     
     Return ONLY valid JSON in this exact format:
     
@@ -117,8 +117,6 @@ def analyse_query(user_query: str) -> dict:
             "raw_content": content,
         }
     
-    valid_intents = set(intents())
-    
     # Get the IDs of valid datasets form datasets.py
     valid_dataset_ids = {dataset["id"] for dataset in datasets()}
     
@@ -137,7 +135,7 @@ def analyse_query(user_query: str) -> dict:
         score = candidate.get("score", 0.0)
         reason = candidate.get("reason", "")
         
-        # Ignore datasets that do no exist in datasets.py
+        # Ignore datasets that do not exist in datasets.py
         if dataset_id in valid_dataset_ids:
             valid_rankings.append({
                 "dataset_id": dataset_id,
@@ -145,14 +143,14 @@ def analyse_query(user_query: str) -> dict:
                 "reason": reason
             })
     
-    # Sort datasets from highest score to lowest score
+    # Sort datasets from the highest score to the lowest score
     valid_rankings.sort(key=lambda x: x["score"], reverse=True)
     
     # Store the validated rankings in the result
     result["ranked_datasets"] = valid_rankings
     
     
-    # Select the highest scoreing valid dataset
+    # Select the highest scoring valid dataset
     if valid_rankings:
         best_dataset = valid_rankings[0]
         result["selected_dataset_id"] = best_dataset["dataset_id"]
@@ -168,5 +166,5 @@ def analyse_query(user_query: str) -> dict:
 
 if __name__ == "__main__":
     query = "" # Enter in a user query here, need to connect to front end
-    result = analyse_query(query)
-    print(json.dumps(result, indent=2))
+    analyse_result = analyse_query(query)
+    print(json.dumps(analyse_result, indent=2))
