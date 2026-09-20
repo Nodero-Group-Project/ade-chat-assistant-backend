@@ -14,15 +14,15 @@ Year:
 
 Location:
 9999 = regional council
-1 = Northland
-2 = Auckland
-3 = Waikato
-4 = Bay of Plenty
-5 = Gisborne
-6 = Hawke's Bay
-7 = Taranaki
-8 = Manawatu / Whanganui
-9 = Wellington
+01 = Northland
+02 = Auckland
+03 = Waikato
+04 = Bay of Plenty
+05 = Gisborne
+06 = Hawke's Bay
+07 = Taranaki
+08 = Manawatu / Whanganui
+09 = Wellington
 12 = West Coast
 13 = Canterbury
 14 = Otago

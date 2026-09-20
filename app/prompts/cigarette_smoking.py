@@ -13,9 +13,24 @@ Year:
 2013, 2018, 2023
 
 Location:
-99999 = health region/health district
 9999 = regional council
-999999 = territorial authority/Auckland local board
+01 = Northland
+02 = Auckland
+03 = Waikato
+04 = Bay of Plenty
+05 = Gisborne
+06 = Hawke's Bay
+07 = Taranaki
+08 = Manawatu / Whanganui
+09 = Wellington
+12 = West Coast
+13 = Canterbury
+14 = Otago
+15 = Southland
+16 = Tasman
+17 = Nelson
+18 = Marlborough
+99 = Area Outside
 
 Behaviour:
 01 = regular smoker
