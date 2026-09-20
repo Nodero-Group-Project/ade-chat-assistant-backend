@@ -111,3 +111,29 @@ async def test_report_smoking_result(mock_analyse_query):
             (result_question == question) and
             (result_dataset == "CEN23_HAD_020") and
             (3207 == result_data))
+
+@pytest.mark.asyncio
+@patch("app.main.report")
+async def test_report_smoking_no_two_urls(mock_analyse_query):
+
+    mock_analyse_query.return_value = {
+        "selected_dataset_id": None
+    }
+
+    question = "Give me the number of smokers and non smokers in 2023."
+
+    result = await report(question)
+
+    result_success = result["success"]
+    result_question = result["question"]
+    result_dataset = result["selected_dataset"]["id"]
+    result_data_1 = result["data"]["data"]["dataSets"][0]["observations"]["0:0:0:0:0:0"][0]
+    result_data_2 = result["data"]["data"]["dataSets"][0]["observations"]["0:0:1:0:0:0"][0]
+    result_data_3 = result["data"]["data"]["dataSets"][0]["observations"]["0:0:2:0:0:0"][0]
+
+    assert ((result_success == True) and
+            (result_question == question) and
+            (result_dataset == "CEN23_HAD_020") and
+            (1012422 == result_data_1) and
+            (4057623 == result_data_2) and
+            (2734392 == result_data_3))

@@ -8,7 +8,8 @@ Your task is to:
 2. Identify the requested value for each of the five API dimensions
 3. Convert each requested value into its corresponding code using ONLY the codes provided below.
 4. Replace EVERY placeholder in the URL with an actual code.
-5. Your response MUST be in these formats:
+5. Generate only one URL.
+6. Your response MUST be in these formats:
     if there is a URL -> API_URL:the url
     if no URL -> ERROR:the reason
 
