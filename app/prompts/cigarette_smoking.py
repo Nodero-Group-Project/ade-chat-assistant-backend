@@ -77,6 +77,7 @@ Rules:
 * If the requested year is unavailable, use 2023.
 * Never guess a location code that has not been provided.
 * Keep the dimension order exactly: year.location.behaviour.ethnicity.age.gender.
+* Generate only one URL.
 * Your response MUST be in these formats:
     if there is a URL -> API_URL: the url
     if no URL -> ERROR: the reason
