@@ -10,7 +10,8 @@ https://api.data.stats.govt.nz/rest/data/STATSNZ,CEN23_HOU_001,1.0/{Year}.{Locat
 Use these codes for parameters in the URL:
 
 Year:
-2018, 2023
+2018 = 2018
+2023 = 2023
 
 Location:
 9999 = regional council
@@ -70,7 +71,7 @@ Rules:
 * If no income is specified = 99
 * If no tenure is specified = 9999
 * if income specified as more than a number or less than a number, select all values which is applied for the number. ex, more than 110000 = 6+7.
-* Multiple values use "+", e.g. Refrigerator and Toilet = 4+6.
+* Multiple values use "+", e.g. Refrigerator and Toilet = 4+6. 2018 and 2023 = 2018+2023.
 * If the requested year is unavailable, use 2023.
 * Never guess a location code that has not been provided.
 * Keep the dimension order exactly: Year.Location.Amenities.Income.Tenure
