@@ -10,7 +10,9 @@ https://api.data.stats.govt.nz/rest/data/STATSNZ,CEN23_HAD_020,1.0/{Year}.{Locat
 Use these codes for parameters in the URL:
 
 Year:
-2013, 2018, 2023
+2013 = 2013
+2018 = 2018
+2023 = 2023
 
 Location:
 9999 = regional council
@@ -73,7 +75,7 @@ Rules:
 * If no age is specified = 99
 * If no gender is specified = 99
 * If no specific location or area is given = 9999
-* Multiple values use "+", e.g. European and Asian = 1+4.
+* Multiple values use "+", e.g. European and Asian = 1+4. 2013 and 2018 = 2013+2018.
 * If the requested year is unavailable, use 2023.
 * Never guess a location code that has not been provided.
 * Keep the dimension order exactly: year.location.behaviour.ethnicity.age.gender.
