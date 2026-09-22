@@ -4,6 +4,7 @@ This file defines the API endpoints and handles incoming requests.
 """
 
 from app.datasets import datasets
+from app.models.Intent import Intent
 from app.services import stat_nz
 from fastapi import FastAPI
 from fastapi.responses import FileResponse
@@ -12,6 +13,7 @@ import os
 from app.llm_query import query_llm
 from app.intent_classification import analyse_query
 from fastapi.middleware.cors import CORSMiddleware
+from app.db import get_all_intents,add_intent,intent_exists,delete_intent
 
 web = FastAPI()
 
@@ -89,15 +91,43 @@ async def report(q: str):
         }
 
 
-@web.get("/download")
-async def download(filename: str):
-    file_path = os.path.join(REPORT_DIR, filename)
+@web.get("/intent")
+async def intent_get_all():
+    intents = get_all_intents()
 
-    if not os.path.exists(file_path):
-        raise HTTPException(status_code=404, detail="File not found")
+    return [
+        {
+            "Description": intent.Description
+        }
+        for intent in intents
+    ]
 
-    return FileResponse(
-        path=file_path,
-        filename=filename,
-        media_type="text/csv"
-    )
+@web.post("/intent")
+async def intent_add(intent: Intent):
+    if intent_exists(intent.Description):
+        return {
+            "success": False,
+            "message": 'The intent already exists.'
+        }
+
+    add_intent(intent.Description)
+
+    return {
+        "success": True,
+        "message": 'The intent added successfully.'
+    }
+
+@web.delete("/intent")
+async def intent_delete(description: str):
+    deleted = delete_intent(description)
+
+    if not deleted:
+        return {
+            "success": False,
+            "message": "Cannot delete the intent."
+        }
+    else:
+        return {
+            "success": True,
+            "message": "Intent deleted successfully."
+        }
