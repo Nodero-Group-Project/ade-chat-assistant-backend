@@ -6,9 +6,6 @@ import os
 load_dotenv()
 connection_string = os.getenv("CONNECTION_STRING")
 
-# CONN_STR = "postgresql://neondb_owner:npg_HUNbyBRYx05K@ep-bitter-sky-axnzj54r.c-4.us-east-2.aws.neon.tech/neondb?sslmode=require"
-
-
 @dataclass
 class Intent:
     Description: str
