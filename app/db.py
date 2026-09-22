@@ -25,7 +25,7 @@ class Dataset:
 def get_all_intents() -> list[Intent]:
     with psycopg.connect(connection_string) as connection:
         with connection.cursor() as cursor:
-            cursor.execute('SELECT * FROM intent')
+            cursor.execute('SELECT * FROM intent order by Description asc')
 
             return [
                 Intent(Description=row[0])
