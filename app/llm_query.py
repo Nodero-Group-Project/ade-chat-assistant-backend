@@ -11,11 +11,32 @@ load_dotenv()
 api_key = os.getenv("GROQ_API_KEY")
 client = Groq(api_key=api_key)
 
+MODELS = {
+    "expert": "openai/gpt-oss-120b",
+    "faster": "openai/gpt-oss-20b",
+    "vision": "qwen/qwen3.8-27b"
+}
+
+INTENT_TIER_MAP ={
+    "simple_lookup": "faster",
+    "filtered_query": "faster",
+    "multi_field_comparison": "expert",
+    "ambiguous_query": "expert",
+    "unsupported_query": "expert"
+}
+
+def select_model_from_intent(intent: str) -> str:
+    label = intent.get("label")
+    confidence = intent.get("confidence")
+    tier = INTENT_TIER_MAP.get(label)
+    
+    if confidence < 0.6:
+        tier = "expert"
+
+    return MODELS[tier]
+    
 # Query the LLM to convert a user query into an API URL
-def query_llm(user_query: str, dataset: dict):
-
-    prompt = ""
-
+def query_llm(user_query: str, dataset: dict, intent: dict):
     # select an appropriate prompt depends on selected dataset
     match dataset["id"]:
         case "CEN23_HAD_020":
@@ -34,7 +55,7 @@ def query_llm(user_query: str, dataset: dict):
     # Ask the LLM to create a URL for the selected dataset
     completion = client.chat.completions.create(
         # model="qwen/qwen3.8-27b",
-        model="openai/gpt-oss-120b",
+        model=select_model_from_intent(intent),
         reasoning_format="hidden",
         max_completion_tokens=4096,
         messages=[
