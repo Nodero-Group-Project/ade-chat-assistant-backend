@@ -5,15 +5,13 @@ This file defines the API endpoints and handles incoming requests.
 
 from app.datasets import datasets
 from app.models.Intent import Intent
+from app.models.Dataset import Dataset
 from app.services import stat_nz
 from fastapi import FastAPI
-from fastapi.responses import FileResponse
-from fastapi import HTTPException
-import os
 from app.llm_query import query_llm
 from app.intent_classification import analyse_query
 from fastapi.middleware.cors import CORSMiddleware
-from app.db import get_all_intents,add_intent,intent_exists,delete_intent
+from app.db import intent_get_all, intent_insert, intent_exists, intent_delete, dataset_get_all, dataset_insert,dataset_exists,dataset_delete,dataset_update
 
 web = FastAPI()
 
@@ -92,8 +90,8 @@ async def report(q: str):
 
 
 @web.get("/intent")
-async def intent_get_all():
-    intents = get_all_intents()
+async def intent_get():
+    intents = intent_get_all()
 
     return [
         {
@@ -110,7 +108,7 @@ async def intent_add(intent: Intent):
             "message": 'The intent already exists.'
         }
 
-    add_intent(intent.Description)
+    intent_insert(intent.Description)
 
     return {
         "success": True,
@@ -118,16 +116,75 @@ async def intent_add(intent: Intent):
     }
 
 @web.delete("/intent")
-async def intent_delete(description: str):
-    deleted = delete_intent(description)
+async def intent_remove(description: str):
+    deleted = intent_delete(description)
 
     if not deleted:
         return {
             "success": False,
-            "message": "Cannot delete the intent."
+            "message": "Cannot remove the intent."
         }
     else:
         return {
             "success": True,
-            "message": "Intent deleted successfully."
+            "message": "Intent removed successfully."
+        }
+
+@web.get("/dataset")
+async def dataset_get():
+    datasets = dataset_get_all()
+
+    return [
+        {
+            "Id":dataset.Id,
+            "Name":dataset.Name,
+            "Description": dataset.Description,
+            "Skill":dataset.Skill
+        }
+        for dataset in datasets
+    ]
+
+@web.post("/dataset")
+async def dataset_add(dataset: Dataset):
+    if dataset_exists(dataset.Id):
+        return {
+            "success": False,
+            "message": 'The dataset already exists.'
+        }
+
+    dataset_insert(dataset.Id,dataset.Name,dataset.Description,dataset.Skill)
+
+    return {
+        "success": True,
+        "message": 'The dataset added successfully.'
+    }
+
+@web.delete("/dataset")
+async def dataset_remove(id: str):
+    deleted = dataset_delete(id)
+
+    if not deleted:
+        return {
+            "success": False,
+            "message": "Cannot remove the dataset."
+        }
+    else:
+        return {
+            "success": True,
+            "message": "Dataset removed successfully."
+        }
+
+@web.put("/dataset")
+async def dataset_edit(dataset: Dataset):
+    updated = dataset_update(dataset.Id,dataset.Name,dataset.Description,dataset.Skill)
+
+    if not updated:
+        return {
+            "success": False,
+            "message": "Cannot edit the dataset."
+        }
+    else:
+        return {
+            "success": True,
+            "message": "Dataset updated successfully."
         }
