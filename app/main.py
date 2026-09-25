@@ -186,5 +186,5 @@ async def dataset_edit(dataset: Dataset):
     else:
         return {
             "success": True,
-            "message": "Dataset updated successfully."
+            "message": "Dataset edited successfully."
         }
