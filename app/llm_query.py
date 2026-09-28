@@ -21,7 +21,8 @@ def select_model(user_query: str, dataset: dict) -> str:
     """ Route to a Groq model using the heuristic router """
     tier = heuristic_tier(user_query, dataset)
     model = MODELS[tier]
-    return model
+    print(f"[routing] tier={tier} model={model} query={user_query!r}")
+    return tier,model
     
 # Query the LLM to convert a user query into an API URL
 def query_llm(user_query: str, dataset: dict):
@@ -38,10 +39,9 @@ def query_llm(user_query: str, dataset: dict):
         case "CEN23_HAD_014":
             prompt = activity_limitations.prompt()
         case _:
-            return {"success": False, "message": f"No prompt configured for dataset {dataset['id']}"}
+            return {"success": False, "message": f"No prompt configured for dataset {dataset['id']}", "model": None, "tier": None}
 
-    print(prompt)
-    model = select_model(user_query, dataset)
+    tier, model = select_model(user_query, dataset)
 
     # Ask the LLM to create a URL for the selected dataset
     completion = client.chat.completions.create(
@@ -64,19 +64,24 @@ def query_llm(user_query: str, dataset: dict):
     if result.startswith("API_URL"):
         return {
             "success": True,
-            "URL": result.replace("API_URL:", "")
+            "URL": result.replace("API_URL:", ""),
+            "model": model,
+            "tier": tier
         }
     # if LLM generates ERROR
     elif result.startswith("ERROR"):
         return {
             "success": False,
-            "message":result.replace("ERROR:", "")
+            "message":result.replace("ERROR:", ""),
+            "model": model,
+            "tier": tier
         }
-    else:
         # here is where the LLM generate nothing. Neither URL nor ERROR
         # because of token limitation, or any other unknown reason.
         return {
             "success": False,
-            "message":"No data found. Please try again later."
+            "message":"No data found. Please try again later.",
+            "model": model,
+            "tier": tier
         }
 

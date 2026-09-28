@@ -73,7 +73,9 @@ async def report(q: str):
                 "success": True,
                 "question": q,
                 "selected_dataset": selected_dataset,  # Selected dataset information to be passed on for retrieval
-                "data": statistic_data
+                "data": statistic_data,
+                "model": query_result["model"],
+                "tier": query_result["tier"],
             }
         else:
             # if statNZ doesn't return data
@@ -81,7 +83,10 @@ async def report(q: str):
                 "success": False,
                 "question": q,
                 "selected_dataset": selected_dataset,
-                "message": "No data retrieved. Please try again later."
+                "message": "No data retrieved. Please try again later.",
+                "URL": query_result["URL"],
+                "model": query_result["model"],
+                "tier": query_result["tier"],
             }
     else:
         # if LLM couldn't find any URL we return the reason
@@ -89,7 +94,9 @@ async def report(q: str):
             "success": False,
             "question": q,
             "selected_dataset": selected_dataset,
-            "message": query_result["message"]
+            "message": query_result["message"],
+            "model": query_result["model"],
+            "tier": query_result["tier"]
         }
 
 
