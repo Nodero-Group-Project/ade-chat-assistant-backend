@@ -3,12 +3,16 @@ Main application file for the FastAPI server.
 This file defines the API endpoints and handles incoming requests.
 """
 
+from dotenv import load_dotenv
+import os
+
+load_dotenv(os.path.join(os.path.dirname(__file__), ".env"))
+
 from app.datasets import datasets
 from app.services import stat_nz
 from fastapi import FastAPI
 from fastapi.responses import FileResponse
 from fastapi import HTTPException
-import os
 from app.llm_query import query_llm
 from app.intent_classification import analyse_query
 from fastapi.middleware.cors import CORSMiddleware

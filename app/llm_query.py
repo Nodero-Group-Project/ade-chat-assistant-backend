@@ -1,15 +1,15 @@
 """
-This is a simple test script to connect to groq API server and get a response.
+Queries Groq to convert a user's question into a StatsNZ API URL,
+routing to a model tier based on the intent classification result.
 """
 
-from groq import Groq
-from dotenv import load_dotenv
 import os
+from groq import Groq
 from app.prompts import cigarette_smoking,household_income,telecommunication_system,education,activity_limitations
+from app.heuristic_router import heuristic_tier
 
-load_dotenv()
-api_key = os.getenv("GROQ_API_KEY")
-client = Groq(api_key=api_key)
+client = Groq(api_key=os.getenv("GROQ_API_KEY"))
+
 
 MODELS = {
     "expert": "openai/gpt-oss-120b",
@@ -17,26 +17,14 @@ MODELS = {
     "vision": "qwen/qwen3.8-27b"
 }
 
-INTENT_TIER_MAP ={
-    "simple_lookup": "faster",
-    "filtered_query": "faster",
-    "multi_field_comparison": "expert",
-    "ambiguous_query": "expert",
-    "unsupported_query": "expert"
-}
-
-def select_model_from_intent(intent: str) -> str:
-    label = intent.get("label")
-    confidence = intent.get("confidence")
-    tier = INTENT_TIER_MAP.get(label)
-    
-    if confidence < 0.6:
-        tier = "expert"
-
-    return MODELS[tier]
+def select_model(user_query: str, dataset: dict) -> str:
+    """ Route to a Groq model using the heuristic router """
+    tier = heuristic_tier(user_query, dataset)
+    model = MODELS[tier]
+    return model
     
 # Query the LLM to convert a user query into an API URL
-def query_llm(user_query: str, dataset: dict, intent: dict):
+def query_llm(user_query: str, dataset: dict):
     # select an appropriate prompt depends on selected dataset
     match dataset["id"]:
         case "CEN23_HAD_020":
@@ -49,26 +37,22 @@ def query_llm(user_query: str, dataset: dict, intent: dict):
             prompt = education.prompt()
         case "CEN23_HAD_014":
             prompt = activity_limitations.prompt()
+        case _:
+            return {"success": False, "message": f"No prompt configured for dataset {dataset['id']}"}
 
     print(prompt)
+    model = select_model(user_query, dataset)
 
     # Ask the LLM to create a URL for the selected dataset
     completion = client.chat.completions.create(
         # model="qwen/qwen3.8-27b",
-        model=select_model_from_intent(intent),
+        model=model,
         reasoning_format="hidden",
         max_completion_tokens=4096,
         messages=[
-            {
-                "role": "system",  # Define role of message sender (user, system, etc)
-                "content": prompt  # Enter prompt here
-            }
-            ,
-            {
-                "role": "user", # Define role of message sender (user, system, etc)
-                "content": user_query, # Enter prompt here
-            }
-        ]
+            {"role": "system", "content": prompt },
+            {"role": "user", "content": user_query},
+        ],
         
     )
 
@@ -82,18 +66,17 @@ def query_llm(user_query: str, dataset: dict, intent: dict):
             "success": True,
             "URL": result.replace("API_URL:", "")
         }
+    # if LLM generates ERROR
+    elif result.startswith("ERROR"):
+        return {
+            "success": False,
+            "message":result.replace("ERROR:", "")
+        }
     else:
-        # if LLM generates ERROR
-        if result.startswith("ERROR"):
-            return {
-                "success": False,
-                "message":result.replace("ERROR:", "")
-            }
-        else:
-            # here is where the LLM generate nothing. Neither URL nor ERROR
-            # because of token limitation, or any other unknown reason.
-            return {
-                "success": False,
-                "message":"No data found. Please try again later."
-            }
+        # here is where the LLM generate nothing. Neither URL nor ERROR
+        # because of token limitation, or any other unknown reason.
+        return {
+            "success": False,
+            "message":"No data found. Please try again later."
+        }
 

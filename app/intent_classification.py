@@ -4,11 +4,8 @@ Intent classification and dataset selection module.
 
 import json
 import os
-from dotenv import load_dotenv
 from groq import Groq
 from app.datasets import datasets, intents
-
-load_dotenv(os.path.join(os.path.dirname(__file__), ".env"))
 
 client = Groq(api_key=os.getenv("GROQ_API_KEY"))
 
@@ -84,14 +81,10 @@ def analyse_query(user_query: str) -> dict:
         reasoning_format="parsed",
         max_completion_tokens=4096,
         messages=[
-            {
-                "role": "system",
-                "content": system_prompt,
-            },
+            {"role": "system","content": system_prompt,},
             {"role": "user", "content": user_query},
         ],
     )
-
 
     # Extract the LLMs response
     message = completion.choices[0].message
@@ -115,11 +108,16 @@ def analyse_query(user_query: str) -> dict:
             "parse_error": str(error),
             "finish_reason": finish_reason,
             "raw_content": content,
+            "intent": None,
+            "confidence": 0.0,
+            "selected_dataset_id": None,
+            "selection_confidence": 0.0,
         }
     
     # Get the IDs of valid datasets form datasets.py
     valid_dataset_ids = {dataset["id"] for dataset in datasets()}
     
+    result.setdefault("intent", None)
     result.setdefault("confidence", 0.0)
     result.setdefault("entities", {})
     result.setdefault("ranked_datasets", [])
@@ -127,7 +125,6 @@ def analyse_query(user_query: str) -> dict:
     
     # Keep only dataset rankings with valid dataset IDs
     valid_rankings = []
-    
     
     # Check each candidate returned by the LLM
     for candidate in result.get("ranked_datasets", []):

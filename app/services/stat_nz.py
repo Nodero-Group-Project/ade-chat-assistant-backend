@@ -1,13 +1,17 @@
 import json
 import urllib.request
 import urllib.error
-import os
 from dotenv import load_dotenv
+import os
 
-load_dotenv()
-api_key = os.getenv("STAT_NZ_API_KEY")
 
 def get(url: str):
+    api_key = os.getenv("STAT_NZ_API_KEY")
+    
+    if not api_key:
+        print("STAT_NZ_API_KEY is not set - check .env file and that load_dotenv() has been called")
+        return None
+    
     headers = {
         'Ocp-Apim-Subscription-Key': api_key,
         'user-agent':'Nodero'
