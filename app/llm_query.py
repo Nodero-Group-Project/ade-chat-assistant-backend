@@ -7,6 +7,7 @@ import os
 from groq import Groq
 from app.prompts import cigarette_smoking,household_income,telecommunication_system,education,activity_limitations
 from app.heuristic_router import heuristic_tier
+from app.llm_usage import log_usage
 
 client = Groq(api_key=os.getenv("GROQ_API_KEY"))
 
@@ -48,15 +49,20 @@ def query_llm(user_query: str, dataset: dict):
         # model="qwen/qwen3.8-27b",
         model=model,
         reasoning_format="hidden",
+        # Mapping a question to codes is simple; low effort cuts billed reasoning tokens
+        reasoning_effort="low",
         max_completion_tokens=4096,
+        # Static system prompt first so Groq can reuse the cached prefix
         messages=[
             {"role": "system", "content": prompt },
             {"role": "user", "content": user_query},
         ],
-        
+
     )
 
-    result = completion.choices[0].message.content.strip()
+    log_usage("query_llm", model, completion)
+
+    result = (completion.choices[0].message.content or "").strip()
 
     print(result)
 
@@ -76,8 +82,9 @@ def query_llm(user_query: str, dataset: dict):
             "model": model,
             "tier": tier
         }
-        # here is where the LLM generate nothing. Neither URL nor ERROR
-        # because of token limitation, or any other unknown reason.
+    # here is where the LLM generate nothing. Neither URL nor ERROR
+    # because of token limitation, or any other unknown reason.
+    else:
         return {
             "success": False,
             "message":"No data found. Please try again later.",

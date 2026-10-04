@@ -1,165 +1,88 @@
 """
-Intent classification and dataset selection module.
+Dataset selection module.
 """
 
 import json
 import os
 from groq import Groq
-from app.datasets import datasets, intents
+from app.datasets import datasets
+from app.llm_usage import log_usage
 
 client = Groq(api_key=os.getenv("GROQ_API_KEY"))
 
+# Picking one of a handful of datasets is simple, so the smaller model is enough
+MODEL = "openai/gpt-oss-20b"
 
-# Analyze the user query and classify it into an intent and select the best dataset
+# One compact line per dataset; the description already contains everything in the name
+DATASET_LINES = "\n".join(f"{dataset['id']}: {dataset['description']}" for dataset in datasets())
+
+# Built once and kept identical between requests so Groq can cache the prefix
+SYSTEM_PROMPT = f"""Select the dataset that can answer the user's question.
+
+Datasets:
+{DATASET_LINES}
+
+A dataset only matches if it covers the requested topic, measures, time period and location/demographic.
+Never invent dataset IDs. If no dataset can answer the question, use null.
+
+Return ONLY JSON: {{"dataset_id": "<ID or null>", "confidence": <0.0-1.0>}}"""
+
+
+# Analyze the user query and select the best dataset
 def analyse_query(user_query: str) -> dict:
-    
-    # Load candidate datasets and valid intents
-    candidate_datasets = datasets()
-    valid_intents = intents()
-    
-    # Create a prompt containing the user query and dataset information
-    system_prompt = f"""
-    You are a query analysis and dataset selection model.
-    
-    Analyse the raw user query and select the best candidate dataset,
-    
-    Valid intents:
-    {json.dumps(valid_intents)}
 
-    Candidate datasets:
-    {json.dumps(candidate_datasets)}
-    
-    Your tasks are:
-    
-    1. Identify the user's intent.
-    2. Extract important entities and requirements.
-    3. Score every candidate dataset from 0.0 to 1.0 based on how well it matches the user's intent and requirements.
-    4. Rank the datasets by score from best to worst.
-    5. Select the best dataset with the highest score and return its ID.
-    
-    Score each dataset using:
-    -Topic match
-    -Meaning match
-    -Whether the dataset contains the required entities
-    -Whether it contains the requested measures or metrics
-    -Whether it covers the requested time period
-    -Whether it covers the requested location or demographic group
-    
-    DO NOT invent dataset IDs
-    Only use UDs from the candidate dataset list provided.
-    A dataset should receive a low score if it cannot answer the user's query or if it is missing important entities or metrics.
-    
-    Return ONLY valid JSON in this exact format:
-    
-    {{
-        "intent": "one valid intent",
-  "confidence": 0.0,
-  "entities": {{
-    "location": "",
-    "time": "",
-    "topic": "",
-    "metric": "",
-    "demographic": "",
-    "required_dimensions": []
-  }},
-  "ranked_datasets": [
-    {{
-      "dataset_id": "one candidate dataset ID",
-      "score": 0.0,
-      "reason": "short explanation"
-    }}
-  ],
-  "selected_dataset_id": "best candidate dataset ID",
-  "selection_confidence": 0.0
-    }}
-    """
-    
     # Send the user query and candidate datasets to the LLM
     completion = client.chat.completions.create(
-        # model="qwen/qwen3.8-27b",
-        model="openai/gpt-oss-120b",
-        reasoning_format="parsed",
-        max_completion_tokens=4096,
+        model=MODEL,
+        reasoning_format="hidden",
+        reasoning_effort="low",
+        response_format={"type": "json_object"},
+        max_completion_tokens=1024,
         messages=[
-            {"role": "system","content": system_prompt,},
+            {"role": "system", "content": SYSTEM_PROMPT},
             {"role": "user", "content": user_query},
         ],
     )
 
-    # Extract the LLMs response
-    message = completion.choices[0].message
-    content = (message.content or "").strip()
+    log_usage("analyse_query", MODEL, completion)
 
-    # Models sometimes wrap an otherwise valid JSON response in Markdown.
-    # Remove any Markdown formatting before attempting to parse the JSON.
-    if content.startswith("```json"):
-        content = content[len("```json"):].strip()
-    if content.endswith("```"):
-        content = content[:-3].strip()
+    # Extract the LLMs response
+    content = (completion.choices[0].message.content or "").strip()
 
     # Error handling for JSON parsing
     try:
         # Convert the JSON text into a Python dictionary
         result = json.loads(content)
     except json.JSONDecodeError as error:
-        finish_reason = completion.choices[0].finish_reason
         return {
             "error": "Failed to parse JSON from LLM response.",
             "parse_error": str(error),
-            "finish_reason": finish_reason,
+            "finish_reason": completion.choices[0].finish_reason,
             "raw_content": content,
-            "intent": None,
-            "confidence": 0.0,
             "selected_dataset_id": None,
             "selection_confidence": 0.0,
         }
-    
+
     # Get the IDs of valid datasets form datasets.py
     valid_dataset_ids = {dataset["id"] for dataset in datasets()}
-    
-    result.setdefault("intent", None)
-    result.setdefault("confidence", 0.0)
-    result.setdefault("entities", {})
-    result.setdefault("ranked_datasets", [])
-    result.setdefault("selection_confidence", 0.0)
-    
-    # Keep only dataset rankings with valid dataset IDs
-    valid_rankings = []
-    
-    # Check each candidate returned by the LLM
-    for candidate in result.get("ranked_datasets", []):
-        dataset_id = candidate.get("dataset_id")
-        score = candidate.get("score", 0.0)
-        reason = candidate.get("reason", "")
-        
-        # Ignore datasets that do not exist in datasets.py
-        if dataset_id in valid_dataset_ids:
-            valid_rankings.append({
-                "dataset_id": dataset_id,
-                "score": score,
-                "reason": reason
-            })
-    
-    # Sort datasets from the highest score to the lowest score
-    valid_rankings.sort(key=lambda x: x["score"], reverse=True)
-    
-    # Store the validated rankings in the result
-    result["ranked_datasets"] = valid_rankings
-    
-    
-    # Select the highest scoring valid dataset
-    if valid_rankings:
-        best_dataset = valid_rankings[0]
-        result["selected_dataset_id"] = best_dataset["dataset_id"]
-        result["selection_confidence"] = best_dataset["score"]
+    dataset_id = result.get("dataset_id")
+
+    # Ignore datasets that do not exist in datasets.py
+    if dataset_id in valid_dataset_ids:
+        analysis = {
+            "selected_dataset_id": dataset_id,
+            "selection_confidence": float(result.get("confidence", 0.0)),
+        }
     else:
         # No suitable dataset was found
-        result["selected_dataset_id"] = None
-        result["selection_confidence"] = 0.0
+        analysis = {
+            "selected_dataset_id": None,
+            "selection_confidence": 0.0,
+        }
 
-    print(result)
+    print(analysis)
 
-    return result
+    return analysis
 
 if __name__ == "__main__":
     query = "" # Enter in a user query here, need to connect to front end
