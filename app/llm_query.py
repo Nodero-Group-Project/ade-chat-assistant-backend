@@ -60,7 +60,7 @@ def query_llm(user_query: str, dataset: dict):
 
     )
 
-    log_usage("query_llm", model, completion)
+    usage = log_usage("query_llm", model, completion)
 
     result = (completion.choices[0].message.content or "").strip()
 
@@ -72,7 +72,8 @@ def query_llm(user_query: str, dataset: dict):
             "success": True,
             "URL": result.replace("API_URL:", ""),
             "model": model,
-            "tier": tier
+            "tier": tier,
+            "usage": usage
         }
     # if LLM generates ERROR
     elif result.startswith("ERROR"):
@@ -80,7 +81,8 @@ def query_llm(user_query: str, dataset: dict):
             "success": False,
             "message":result.replace("ERROR:", ""),
             "model": model,
-            "tier": tier
+            "tier": tier,
+            "usage": usage
         }
     # here is where the LLM generate nothing. Neither URL nor ERROR
     # because of token limitation, or any other unknown reason.
@@ -89,6 +91,7 @@ def query_llm(user_query: str, dataset: dict):
             "success": False,
             "message":"No data found. Please try again later.",
             "model": model,
-            "tier": tier
+            "tier": tier,
+            "usage": usage
         }
 

@@ -15,6 +15,7 @@ from fastapi.responses import FileResponse
 from fastapi import HTTPException
 from app.llm_query import query_llm
 from app.intent_classification import analyse_query
+from app.llm_usage import combine_usage
 from fastapi.middleware.cors import CORSMiddleware
 
 web = FastAPI()
@@ -41,7 +42,8 @@ async def report(q: str):
             "success": False,
             "question": q,
             "selected_dataset": "",
-            "message": "Unfortunately we can't provide any data for your question."
+            "message": "Unfortunately we can't provide any data for your question.",
+            "tokens": combine_usage(analyse_query=analysis.get("usage")),
         }
 
     # Get the selected dataset using the ID returned by the LLM
@@ -60,6 +62,12 @@ async def report(q: str):
         dataset=selected_dataset
     )
 
+    # Total input/output tokens across both LLM calls for this question
+    tokens = combine_usage(
+        analyse_query=analysis.get("usage"),
+        query_llm=query_result.get("usage"),
+    )
+
     # if LLN can translate the question to URL
     if query_result["success"]:
 
@@ -76,6 +84,7 @@ async def report(q: str):
                 "data": statistic_data,
                 "model": query_result["model"],
                 "tier": query_result["tier"],
+                "tokens": tokens,
             }
         else:
             # if statNZ doesn't return data
@@ -87,6 +96,7 @@ async def report(q: str):
                 "URL": query_result["URL"],
                 "model": query_result["model"],
                 "tier": query_result["tier"],
+                "tokens": tokens,
             }
     else:
         # if LLM couldn't find any URL we return the reason
@@ -96,7 +106,8 @@ async def report(q: str):
             "selected_dataset": selected_dataset,
             "message": query_result["message"],
             "model": query_result["model"],
-            "tier": query_result["tier"]
+            "tier": query_result["tier"],
+            "tokens": tokens,
         }
 
 

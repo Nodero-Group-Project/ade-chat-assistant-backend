@@ -44,7 +44,7 @@ def analyse_query(user_query: str) -> dict:
         ],
     )
 
-    log_usage("analyse_query", MODEL, completion)
+    usage = log_usage("analyse_query", MODEL, completion)
 
     # Extract the LLMs response
     content = (completion.choices[0].message.content or "").strip()
@@ -61,6 +61,7 @@ def analyse_query(user_query: str) -> dict:
             "raw_content": content,
             "selected_dataset_id": None,
             "selection_confidence": 0.0,
+            "usage": usage,
         }
 
     # Get the IDs of valid datasets form datasets.py
@@ -79,6 +80,8 @@ def analyse_query(user_query: str) -> dict:
             "selected_dataset_id": None,
             "selection_confidence": 0.0,
         }
+
+    analysis["usage"] = usage
 
     print(analysis)
 
