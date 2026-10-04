@@ -47,7 +47,7 @@ async def report(q: str):
     selected_dataset = next(
         dataset
         for dataset in datasets()
-        if dataset["id"] == selected_dataset_id
+        if dataset["Id"] == selected_dataset_id
     )
 
     # Try to generate a valid StatNZ URL for user question.
