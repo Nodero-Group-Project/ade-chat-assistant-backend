@@ -11,7 +11,7 @@ from fastapi import FastAPI
 from app.llm_query import query_llm
 from app.intent_classification import analyse_query
 from fastapi.middleware.cors import CORSMiddleware
-from app.db import intent_get_all, intent_insert, intent_exists, intent_delete, dataset_get_all,dataset_get, dataset_insert,dataset_exists,dataset_delete,dataset_update
+from app.db import intent_get_all, intent_insert, intent_exists, intent_delete, dataset_get_all,dataset_get_by_id, dataset_insert,dataset_exists,dataset_delete,dataset_update
 
 web = FastAPI()
 
@@ -44,7 +44,7 @@ async def report(q: str):
     selected_dataset_id = analysis["selected_dataset_id"]
 
     # Find the complete dataset information from datasets.py
-    selected_dataset = dataset_get(selected_dataset_id)
+    selected_dataset = dataset_get_by_id(selected_dataset_id)
 
     # Try to generate a valid StatNZ URL for user question.
     query_result = query_llm(
@@ -136,7 +136,7 @@ async def intent_remove(description: str):
         }
 
 @web.get("/dataset")
-async def dataset_get_all():
+async def dataset_get():
     datasets = dataset_get_all()
 
     return [

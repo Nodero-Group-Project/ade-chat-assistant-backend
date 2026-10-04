@@ -77,7 +77,7 @@ def dataset_get_all() -> list[Dataset]:
                 for row in cursor.fetchall()
             ]
 
-def dataset_get(dataset_id: str) -> Dataset | None:
+def dataset_get_by_id(dataset_id: str) -> Dataset | None:
     with psycopg.connect(connection_string) as connection:
         with connection.cursor() as cursor:
             cursor.execute(

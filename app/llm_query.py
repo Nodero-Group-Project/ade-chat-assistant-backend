@@ -5,8 +5,6 @@ This is a simple test script to connect to groq API server and get a response.
 from groq import Groq
 from dotenv import load_dotenv
 import os
-from app.prompts import cigarette_smoking,household_income,telecommunication_system,education,activity_limitations
-from app.db import dataset_get
 
 load_dotenv()
 api_key = os.getenv("GROQ_API_KEY")
