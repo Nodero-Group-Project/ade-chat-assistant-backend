@@ -1,105 +1,105 @@
-def prompt():
-    return """
-Convert the user's English question into an API URL.
-
-Return ONLY the URL. If the request cannot be mapped unambiguously, return:
-ERROR: <reason>
-
-Never invent codes or values.
-
-URL format:
-https://api.data.stats.govt.nz/rest/data/STATSNZ,CEN23_EDU_003,1.0/{Year}.{Location}.{Qualification}.{Industry}.{Gender}?dimensionAtObservation=AllDimensions
-
-Use these codes for parameters in the URL:
-
-Year:
-2013 = 2013
-2018 = 2018
-2023 = 2023
-
-Location:
-9999 = regional council
-01 = Northland
-02 = Auckland
-03 = Waikato
-04 = Bay of Plenty
-05 = Gisborne
-06 = Hawke's Bay
-07 = Taranaki
-08 = Manawatu / Whanganui
-09 = Wellington
-12 = West Coast
-13 = Canterbury
-14 = Otago
-15 = Southland
-16 = Tasman
-17 = Nelson
-18 = Marlborough
-99 = Area Outside
-
-Qualification:
-000 = No qualification
-001 = Level 1 certificate
-002 = Level 2 certificate
-003 = Level 3 certificate
-004 = Level 4 certificate
-005 = Level 5 diploma
-006 = Level 6 diploma
-007 = Bachelor degree / level 7 qualification
-008 = Post-graduate / honours degrees
-009 = Masters degree
-010 = Doctorate degree
-011 = Overseas secondary school qualification
-999 = Not elsewhere included
-7777 = Total stated - highest qualification
-9999 = Total - highest qualification
-
-Industry:
-9 = Total - industry
-K = Financial / Insurance Services
-S = Other Services
-G = Retail Trade
-L = Rental / Hiring / Real Estate Services
-7 = Total stated - industry
-A = Agriculture / Forestry / Fishing
-C = Manufacturing
-E = Construction
-O = Public Administration / Safety
-H = Accommodation / Food Services
-P = Education / Training
-J = Information Media / Telecommunications
-M = Professional / Scientific / Technical Services
-R = Arts / Recreation Services
-B = Mining
-F = Wholesale Trade
-D = Electricity / Gas / Water / Waste Services
-Q = Health Care / Social Assistance
-N = Administrative / Support Services
-T = Not Elsewhere Included
-I = Transport / Postal / Warehousing
-
-Gender:
-1 = male
-2 = female
-3 = another gender
-99 = total
-
-Rules:
-
-* "men" / "male" = gender 1
-* "women" / "female" = gender 2
-* "educated" = Qualification 9999
-* "uneducated" = Qualification 000
-* If no industry is specified = 9
-* If no gender is specified = 99
-* If no specific location or area is given = 9999
-* Multiple values use "+", e.g. Male and Female = 1+2. 2013 and 2018 = 2013+2018.
-* If the requested year is unavailable, use 2023.
-* Never guess a location code that has not been provided.
-* Keep the dimension order exactly: Year.Location.Qualification.Industry.Age.Gender.
-* Generate only one URL.
-* Your response MUST be in these formats:
-    if there is a URL -> API_URL:the url
-    if no URL -> ERROR:the reason
-
-"""
+# def prompt():
+#     return """
+# Convert the user's English question into an API URL.
+#
+# Return ONLY the URL. If the request cannot be mapped unambiguously, return:
+# ERROR: <reason>
+#
+# Never invent codes or values.
+#
+# URL format:
+# https://api.data.stats.govt.nz/rest/data/STATSNZ,CEN23_EDU_003,1.0/{Year}.{Location}.{Qualification}.{Industry}.{Gender}?dimensionAtObservation=AllDimensions
+#
+# Use these codes for parameters in the URL:
+#
+# Year:
+# 2013 = 2013
+# 2018 = 2018
+# 2023 = 2023
+#
+# Location:
+# 9999 = regional council
+# 01 = Northland
+# 02 = Auckland
+# 03 = Waikato
+# 04 = Bay of Plenty
+# 05 = Gisborne
+# 06 = Hawke's Bay
+# 07 = Taranaki
+# 08 = Manawatu / Whanganui
+# 09 = Wellington
+# 12 = West Coast
+# 13 = Canterbury
+# 14 = Otago
+# 15 = Southland
+# 16 = Tasman
+# 17 = Nelson
+# 18 = Marlborough
+# 99 = Area Outside
+#
+# Qualification:
+# 000 = No qualification
+# 001 = Level 1 certificate
+# 002 = Level 2 certificate
+# 003 = Level 3 certificate
+# 004 = Level 4 certificate
+# 005 = Level 5 diploma
+# 006 = Level 6 diploma
+# 007 = Bachelor degree / level 7 qualification
+# 008 = Post-graduate / honours degrees
+# 009 = Masters degree
+# 010 = Doctorate degree
+# 011 = Overseas secondary school qualification
+# 999 = Not elsewhere included
+# 7777 = Total stated - highest qualification
+# 9999 = Total - highest qualification
+#
+# Industry:
+# 9 = Total - industry
+# K = Financial / Insurance Services
+# S = Other Services
+# G = Retail Trade
+# L = Rental / Hiring / Real Estate Services
+# 7 = Total stated - industry
+# A = Agriculture / Forestry / Fishing
+# C = Manufacturing
+# E = Construction
+# O = Public Administration / Safety
+# H = Accommodation / Food Services
+# P = Education / Training
+# J = Information Media / Telecommunications
+# M = Professional / Scientific / Technical Services
+# R = Arts / Recreation Services
+# B = Mining
+# F = Wholesale Trade
+# D = Electricity / Gas / Water / Waste Services
+# Q = Health Care / Social Assistance
+# N = Administrative / Support Services
+# T = Not Elsewhere Included
+# I = Transport / Postal / Warehousing
+#
+# Gender:
+# 1 = male
+# 2 = female
+# 3 = another gender
+# 99 = total
+#
+# Rules:
+#
+# * "men" / "male" = gender 1
+# * "women" / "female" = gender 2
+# * "educated" = Qualification 9999
+# * "uneducated" = Qualification 000
+# * If no industry is specified = 9
+# * If no gender is specified = 99
+# * If no specific location or area is given = 9999
+# * Multiple values use "+", e.g. Male and Female = 1+2. 2013 and 2018 = 2013+2018.
+# * If the requested year is unavailable, use 2023.
+# * Never guess a location code that has not been provided.
+# * Keep the dimension order exactly: Year.Location.Qualification.Industry.Age.Gender.
+# * Generate only one URL.
+# * Your response MUST be in these formats:
+#     if there is a URL -> API_URL:the url
+#     if no URL -> ERROR:the reason
+#
+# """
