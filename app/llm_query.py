@@ -17,7 +17,7 @@ def query_llm(user_query: str, dataset: dict):
     prompt = ""
 
     # select an appropriate prompt depends on selected dataset
-    match dataset["Id"]:
+    match dataset["id"]:
         case "CEN23_HAD_020":
             prompt = cigarette_smoking.prompt()
         case "CEN23_HOU_001":

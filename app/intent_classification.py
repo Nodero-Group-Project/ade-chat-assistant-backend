@@ -118,7 +118,7 @@ def analyse_query(user_query: str) -> dict:
         }
     
     # Get the IDs of valid datasets form datasets.py
-    valid_dataset_ids = {dataset["Id"] for dataset in datasets()}
+    valid_dataset_ids = {dataset["id"] for dataset in datasets()}
     
     result.setdefault("confidence", 0.0)
     result.setdefault("entities", {})
