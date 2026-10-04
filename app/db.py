@@ -138,7 +138,7 @@ def dataset_update(id:str,name:str,description:str,skill:str,filters:str) -> boo
                 'UPDATE dataset '
                 'SET Name = %s, '
                 'Description = %s, '
-                'Skill = %s '
+                'Skill = %s, '
                 'Filters = %s '
                 'WHERE Id = %s',
                 (
