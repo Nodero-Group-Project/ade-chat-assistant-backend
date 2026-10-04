@@ -56,7 +56,8 @@ async def report(q: str):
     dataset_info = {
         "id": selected_dataset.Id,
         "name": selected_dataset.Name,
-        "description": selected_dataset.Description
+        "description": selected_dataset.Description,
+        "filters": selected_dataset.Filters
     }
 
     # if LLN can translate the question to URL
