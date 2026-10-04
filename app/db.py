@@ -16,6 +16,7 @@ class Dataset:
     Name: str
     Description: str
     Skill: str
+    Filters: str
 
 
 def intent_get_all() -> list[Intent]:
@@ -71,18 +72,19 @@ def dataset_get_all() -> list[Dataset]:
                     Id=row[0],
                     Name=row[1],
                     Description=row[2],
-                    Skill=row[3]
+                    Skill=row[3],
+                    Filters=row[4]
                 )
                 for row in cursor.fetchall()
             ]
 
-def dataset_insert(id:str,name:str,description:str,skill:str) -> None:
+def dataset_insert(id:str,name:str,description:str,skill:str,filters:str) -> None:
     with psycopg.connect(connection_string) as connection:
         with connection.cursor() as cursor:
             cursor.execute(
-                'INSERT INTO dataset (Id, Name, Description, Skill) VALUES (%s, %s, %s, %s)',
+                'INSERT INTO dataset (Id, Name, Description, Skill, Filters) VALUES (%s, %s, %s, %s, %s)',
                 (
-                    id,name,description,skill
+                    id,name,description,skill,filters
                 )
             )
 
@@ -108,7 +110,7 @@ def dataset_delete(id: str) -> bool:
 
             return cursor.rowcount > 0
 
-def dataset_update(id:str,name:str,description:str,skill:str) -> bool:
+def dataset_update(id:str,name:str,description:str,skill:str,filters:str) -> bool:
     with psycopg.connect(connection_string) as connection:
         with connection.cursor() as cursor:
             cursor.execute(
@@ -116,11 +118,13 @@ def dataset_update(id:str,name:str,description:str,skill:str) -> bool:
                 'SET Name = %s, '
                 'Description = %s, '
                 'Skill = %s '
+                'Filters = %s '
                 'WHERE Id = %s',
                 (
                     name,
                     description,
                     skill,
+                    filters,
                     id
                 )
             )

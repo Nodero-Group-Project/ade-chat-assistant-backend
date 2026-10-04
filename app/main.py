@@ -139,7 +139,8 @@ async def dataset_get():
             "Id":dataset.Id,
             "Name":dataset.Name,
             "Description": dataset.Description,
-            "Skill":dataset.Skill
+            "Skill":dataset.Skill,
+            "Filters":dataset.Filters
         }
         for dataset in datasets
     ]
@@ -152,7 +153,7 @@ async def dataset_add(dataset: Dataset):
             "message": 'The dataset already exists.'
         }
 
-    dataset_insert(dataset.Id,dataset.Name,dataset.Description,dataset.Skill)
+    dataset_insert(dataset.Id,dataset.Name,dataset.Description,dataset.Skill,dataset.Filters)
 
     return {
         "success": True,
@@ -176,7 +177,7 @@ async def dataset_remove(id: str):
 
 @web.put("/dataset")
 async def dataset_edit(dataset: Dataset):
-    updated = dataset_update(dataset.Id,dataset.Name,dataset.Description,dataset.Skill)
+    updated = dataset_update(dataset.Id,dataset.Name,dataset.Description,dataset.Skill,dataset.Filters)
 
     if not updated:
         return {

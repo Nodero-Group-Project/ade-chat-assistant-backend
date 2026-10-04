@@ -5,3 +5,4 @@ class Dataset(BaseModel):
     Name: str
     Description: str
     Skill: str
+    Filters: str
