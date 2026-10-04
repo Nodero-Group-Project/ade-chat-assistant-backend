@@ -11,7 +11,7 @@ from fastapi import FastAPI
 from app.llm_query import query_llm
 from app.intent_classification import analyse_query
 from fastapi.middleware.cors import CORSMiddleware
-from app.db import intent_get_all, intent_insert, intent_exists, intent_delete, dataset_get_all, dataset_insert,dataset_exists,dataset_delete,dataset_update
+from app.db import intent_get_all, intent_insert, intent_exists, intent_delete, dataset_get_all,dataset_get, dataset_insert,dataset_exists,dataset_delete,dataset_update
 
 web = FastAPI()
 
@@ -44,17 +44,20 @@ async def report(q: str):
     selected_dataset_id = analysis["selected_dataset_id"]
 
     # Find the complete dataset information from datasets.py
-    selected_dataset = next(
-        dataset
-        for dataset in datasets()
-        if dataset["id"] == selected_dataset_id
-    )
+    selected_dataset = dataset_get(selected_dataset_id)
 
     # Try to generate a valid StatNZ URL for user question.
     query_result = query_llm(
         user_query=q,
-        dataset=selected_dataset
+        prompt=selected_dataset.Skill
     )
+
+    # Selected dataset information to be passed on for retrieval
+    dataset_info = {
+        "id": selected_dataset.Id,
+        "name": selected_dataset.Name,
+        "description": selected_dataset.Description
+    }
 
     # if LLN can translate the question to URL
     if query_result["success"]:
@@ -63,12 +66,13 @@ async def report(q: str):
         # statNZ api needs "format=jsondata" to return data in json format
         statistic_data = stat_nz.get(query_result["URL"]+"&format=jsondata")
 
+
         # if we get data from StatNZ
         if statistic_data:
             return{
                 "success": True,
                 "question": q,
-                "selected_dataset": selected_dataset,  # Selected dataset information to be passed on for retrieval
+                "selected_dataset": dataset_info,  # Selected dataset information to be passed on for retrieval
                 "data": statistic_data
             }
         else:
@@ -76,7 +80,7 @@ async def report(q: str):
             return{
                 "success": False,
                 "question": q,
-                "selected_dataset": selected_dataset,
+                "selected_dataset": dataset_info,
                 "message": "No data retrieved. Please try again later."
             }
     else:
@@ -84,7 +88,7 @@ async def report(q: str):
         return {
             "success": False,
             "question": q,
-            "selected_dataset": selected_dataset,
+            "selected_dataset": dataset_info,
             "message": query_result["message"]
         }
 
@@ -131,7 +135,7 @@ async def intent_remove(description: str):
         }
 
 @web.get("/dataset")
-async def dataset_get():
+async def dataset_get_all():
     datasets = dataset_get_all()
 
     return [

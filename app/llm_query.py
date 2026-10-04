@@ -6,28 +6,14 @@ from groq import Groq
 from dotenv import load_dotenv
 import os
 from app.prompts import cigarette_smoking,household_income,telecommunication_system,education,activity_limitations
+from app.db import dataset_get
 
 load_dotenv()
 api_key = os.getenv("GROQ_API_KEY")
 client = Groq(api_key=api_key)
 
 # Query the LLM to convert a user query into an API URL
-def query_llm(user_query: str, dataset: dict):
-
-    prompt = ""
-
-    # select an appropriate prompt depends on selected dataset
-    match dataset["id"]:
-        case "CEN23_HAD_020":
-            prompt = cigarette_smoking.prompt()
-        case "CEN23_HOU_001":
-            prompt = household_income.prompt()
-        case "CEN23_FHH_017":
-            prompt = telecommunication_system.prompt()
-        case "CEN23_EDU_003":
-            prompt = education.prompt()
-        case "CEN23_HAD_014":
-            prompt = activity_limitations.prompt()
+def query_llm(user_query: str, prompt: str):
 
     print(prompt)
 

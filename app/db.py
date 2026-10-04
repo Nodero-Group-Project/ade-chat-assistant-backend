@@ -59,7 +59,6 @@ def intent_delete(description: str) -> bool:
 
             return cursor.rowcount > 0
 
-
 def dataset_get_all() -> list[Dataset]:
     with psycopg.connect(connection_string) as connection:
         with connection.cursor() as cursor:
@@ -77,6 +76,28 @@ def dataset_get_all() -> list[Dataset]:
                 )
                 for row in cursor.fetchall()
             ]
+
+def dataset_get(dataset_id: str) -> Dataset | None:
+    with psycopg.connect(connection_string) as connection:
+        with connection.cursor() as cursor:
+            cursor.execute(
+                'SELECT Id, Name, Description, Skill, Filters '
+                'FROM dataset WHERE Id = %s',
+                (dataset_id,)
+            )
+
+            row = cursor.fetchone()
+
+            if row is None:
+                return None
+
+            return Dataset(
+                Id=row[0],
+                Name=row[1],
+                Description=row[2],
+                Skill=row[3],
+                Filters=row[4]
+            )
 
 def dataset_insert(id:str,name:str,description:str,skill:str,filters:str) -> None:
     with psycopg.connect(connection_string) as connection:
