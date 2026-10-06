@@ -13,5 +13,12 @@ dependencies = [
     "pytest-asyncio>=1.4.0",
 ]
 
+[tool.pytest.ini_options]
+testpaths = ["app/tests"]
+pythonpath = ["."]
+markers = [
+    "live: calls the real Groq and StatsNZ APIs (costs tokens); run with --live",
+]
+
 [tool.fastapi]
 entrypoint = "app.main:web"
