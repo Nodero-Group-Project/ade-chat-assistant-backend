@@ -7,7 +7,7 @@ import pytest
 from app import llm_query
 from app.datasets import datasets
 
-DATASET_IDS = [dataset.id for dataset in datasets()]
+DATASET_IDS = [dataset["id"] for dataset in datasets()]
 
 def prompt_for(dataset_id, fake_groq):
     """ Run query_llm with a fake Groq client and return the system prompt it sent """

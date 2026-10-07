@@ -1,34 +1,26 @@
+"""
+End-to-end tests against the real Groq and StatsNZ APIs.
+They cost tokens and the LLM can vary between runs, so they only run with: pytest --live
+"""
+
 import pytest
-from unittest.mock import patch
 from app.main import report
 
+pytestmark = pytest.mark.live
+
 @pytest.mark.asyncio
-@patch("app.main.report")
-async def test_report_no_dataset(mock_analyse_query):
-
-    mock_analyse_query.return_value = {
-        "selected_dataset_id": None
-    }
-
+async def test_report_no_dataset():
     question = "Is there any black hole near the solar system?"
 
     result = await report(question)
 
-    assert result == {
-        "success": False,
-        "question": question,
-        "selected_dataset": "",
-        "message": "Unfortunately we can't provide any data for your question."
-    }
+    assert result["success"] is False
+    assert result["question"] == question
+    assert result["selected_dataset"] == ""
+    assert result["message"] == "Unfortunately we can't provide any data for your question."
 
 @pytest.mark.asyncio
-@patch("app.main.report")
-async def test_report_education_result(mock_analyse_query):
-
-    mock_analyse_query.return_value = {
-        "selected_dataset_id": None
-    }
-
+async def test_report_education_result():
     question = "how many student which was living in auckland hold bachelor in 2018?"
 
     result = await report(question)
@@ -44,13 +36,7 @@ async def test_report_education_result(mock_analyse_query):
             (170514 == result_data))
 
 @pytest.mark.asyncio
-@patch("app.main.report")
-async def test_report_household_result(mock_analyse_query):
-
-    mock_analyse_query.return_value = {
-        "selected_dataset_id": None
-    }
-
+async def test_report_household_result():
     question = "how many house owners with more than 200 thousand income exists in Tasman? their house should have sink, toilet and refrigerator."
 
     result = await report(question)
@@ -70,13 +56,7 @@ async def test_report_household_result(mock_analyse_query):
             (1290 == result_data_3))
 
 @pytest.mark.asyncio
-@patch("app.main.report")
-async def test_report_telecommunication_result(mock_analyse_query):
-
-    mock_analyse_query.return_value = {
-        "selected_dataset_id": None
-    }
-
+async def test_report_telecommunication_result():
     question = "I need to know about the children boys from pacific living in gisborne who can access to the internet."
 
     result = await report(question)
@@ -92,13 +72,7 @@ async def test_report_telecommunication_result(mock_analyse_query):
             (408 == result_data))
 
 @pytest.mark.asyncio
-@patch("app.main.report")
-async def test_report_smoking_result(mock_analyse_query):
-
-    mock_analyse_query.return_value = {
-        "selected_dataset_id": None
-    }
-
+async def test_report_smoking_result():
     question = "Any information about the number of asian men under 30 which leave smoking in 2013?"
     result = await report(question)
 
@@ -113,13 +87,7 @@ async def test_report_smoking_result(mock_analyse_query):
             (3207 == result_data))
 
 @pytest.mark.asyncio
-@patch("app.main.report")
-async def test_report_smoking_no_two_urls(mock_analyse_query):
-
-    mock_analyse_query.return_value = {
-        "selected_dataset_id": None
-    }
-
+async def test_report_smoking_no_two_urls():
     question = "Give me the number of smokers and non smokers in 2023."
 
     result = await report(question)

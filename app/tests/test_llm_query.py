@@ -13,7 +13,7 @@ def test_url_reply_is_returned(fake_groq):
     result = llm_query.query_llm("house owners in Tasman", HOUSEHOLD)
     
     assert result["success"] is True
-    assert result["url"] == URL
+    assert result["URL"] == URL
     assert result["usage"]["input"] == 700
     assert result["usage"]["output"] == 150
     
@@ -22,7 +22,7 @@ def test_url_reply_with_space_after_prefix(fake_groq):
     
     result = llm_query.query_llm("house owners in Tasman", HOUSEHOLD)
     
-    assert result["url"] == URL
+    assert result["URL"] == URL
     
 def test_error_reply_results_reason(fake_groq):
     fake_groq(llm_query, "ERROR: Year 1990 is not available")
@@ -30,7 +30,7 @@ def test_error_reply_results_reason(fake_groq):
     result = llm_query.query_llm("house owners in 1990", HOUSEHOLD)
     
     assert result["success"] is False
-    assert result["reason"] == "Year 1990 is not available"
+    assert result["message"] == "Year 1990 is not available"
     assert "usage" in result
     
 def test_unexpected_reply_returns_fallback_message(fake_groq):
