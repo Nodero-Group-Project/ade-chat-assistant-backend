@@ -5,7 +5,6 @@ routing to a model tier based on the intent classification result.
 
 import os
 from groq import Groq
-from app.prompts import cigarette_smoking,household_income,telecommunication_system,education,activity_limitations
 from app.heuristic_router import heuristic_tier
 from app.llm_usage import log_usage
 
@@ -27,20 +26,6 @@ def select_model(user_query: str, dataset: dict) -> str:
 
 # Query the LLM to convert a user query into an API URL
 def query_llm(user_query: str, dataset: dict):
-    # select an appropriate prompt depends on selected dataset
-    match dataset["id"]:
-        case "CEN23_HAD_020":
-            prompt = cigarette_smoking.prompt()
-        case "CEN23_HOU_001":
-            prompt = household_income.prompt()
-        case "CEN23_FHH_017":
-            prompt = telecommunication_system.prompt()
-        case "CEN23_EDU_003":
-            prompt = education.prompt()
-        case "CEN23_HAD_014":
-            prompt = activity_limitations.prompt()
-        case _:
-            return {"success": False, "message": f"No prompt configured for dataset {dataset['id']}", "model": None, "tier": None}
 
     tier, model = select_model(user_query, dataset)
 
@@ -54,7 +39,7 @@ def query_llm(user_query: str, dataset: dict):
         max_completion_tokens=4096,
         # Static system prompt first so Groq can reuse the cached prefix
         messages=[
-            {"role": "system", "content": prompt },
+            {"role": "system", "content": dataset["Skill"] },
             {"role": "user", "content": user_query},
         ],
 
@@ -63,8 +48,6 @@ def query_llm(user_query: str, dataset: dict):
     usage = log_usage("query_llm", model, completion)
 
     result = (completion.choices[0].message.content or "").strip()
-
-    print(result)
 
     # if LLM generates URL
     if result.startswith("API_URL"):

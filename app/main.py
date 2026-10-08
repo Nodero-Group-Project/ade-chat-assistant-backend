@@ -2,11 +2,11 @@
 Main application file for the FastAPI server.
 This file defines the API endpoints and handles incoming requests.
 """
-
+from dataclasses import asdict
 from dotenv import load_dotenv
-import os
 
-load_dotenv(os.path.join(os.path.dirname(__file__), ".env"))
+# load_dotenv(os.path.join(os.path.dirname(__file__), ".env"))
+load_dotenv()
 
 from app.models.Intent import Intent
 from app.models.Dataset import Dataset
@@ -55,7 +55,7 @@ async def report(q: str):
     # Try to generate a valid StatNZ URL for user question.
     query_result = query_llm(
         user_query=q,
-        prompt=selected_dataset.Skill
+        dataset= asdict(selected_dataset)
     )
 
     # Selected dataset information to be passed on for retrieval
@@ -86,8 +86,6 @@ async def report(q: str):
                 "success": True,
                 "question": q,
                 "selected_dataset": dataset_info,  # Selected dataset information to be passed on for retrieval
-                "data": statistic_data
-                "selected_dataset": selected_dataset,  # Selected dataset information to be passed on for retrieval
                 "data": statistic_data,
                 "model": query_result["model"],
                 "tier": query_result["tier"],
@@ -99,8 +97,6 @@ async def report(q: str):
                 "success": False,
                 "question": q,
                 "selected_dataset": dataset_info,
-                "message": "No data retrieved. Please try again later."
-                "selected_dataset": selected_dataset,
                 "message": "No data retrieved. Please try again later.",
                 "URL": query_result["URL"],
                 "model": query_result["model"],
@@ -113,8 +109,6 @@ async def report(q: str):
             "success": False,
             "question": q,
             "selected_dataset": dataset_info,
-            "message": query_result["message"]
-            "selected_dataset": selected_dataset,
             "message": query_result["message"],
             "model": query_result["model"],
             "tier": query_result["tier"],

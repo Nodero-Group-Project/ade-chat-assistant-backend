@@ -83,11 +83,9 @@ def analyse_query(user_query: str) -> dict:
 
     analysis["usage"] = usage
 
-    print(analysis)
-
     return analysis
 
 if __name__ == "__main__":
-    query = "" # Enter in a user query here, need to connect to front end
+    query = "how many student hold bachelor in 2018?" # Enter in a user query here, need to connect to front end
     analyse_result = analyse_query(query)
     print(json.dumps(analyse_result, indent=2))
