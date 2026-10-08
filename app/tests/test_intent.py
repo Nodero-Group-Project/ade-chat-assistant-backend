@@ -8,7 +8,7 @@ from app.main import intent_add,intent_remove,intent_get
 @patch("app.main.intent_add")
 async def test_intent_add(mock):
 
-    intent = Intent(Description="INTENT_FOR_TEST")
+    intent = Intent(Description="000_INTENT_FOR_TEST")
 
     result = await intent_add(intent)
 
@@ -21,7 +21,7 @@ async def test_intent_add(mock):
 @patch("app.main.intent_add")
 async def test_intent_exists(mock):
 
-    intent = Intent(Description="INTENT_FOR_TEST")
+    intent = Intent(Description="000_INTENT_FOR_TEST")
 
     result = await intent_add(intent)
 
@@ -32,7 +32,7 @@ async def test_intent_exists(mock):
 
 @pytest.mark.asyncio
 @patch("app.main.intent_get")
-async def test_intent_exists(mock):
+async def test_intent_get(mock):
 
     result = await intent_get()
 
@@ -42,7 +42,7 @@ async def test_intent_exists(mock):
 @patch("app.main.intent_remove")
 async def test_intent_remove(mock):
 
-    result = await intent_remove("INTENT_FOR_TEST")
+    result = await intent_remove("000_INTENT_FOR_TEST")
 
     assert result == {
         "success": True,
