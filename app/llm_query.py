@@ -24,7 +24,7 @@ def select_model(user_query: str, dataset: dict) -> str:
     model = MODELS[tier]
     print(f"[routing] tier={tier} model={model} query={user_query!r}")
     return tier,model
-    
+
 # Query the LLM to convert a user query into an API URL
 def query_llm(user_query: str, dataset: dict):
     # select an appropriate prompt depends on selected dataset
