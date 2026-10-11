@@ -3,12 +3,12 @@ Main application file for the FastAPI server.
 This file defines the API endpoints and handles incoming requests.
 """
 from dataclasses import asdict
+import os
 from dotenv import load_dotenv
 
-# load_dotenv(os.path.join(os.path.dirname(__file__), ".env"))
-load_dotenv()
+load_dotenv(os.path.join(os.path.dirname(__file__), ".env"))
+# load_dotenv()
 
-from app.models.Intent import Intent
 from app.models.Dataset import Dataset
 from app.services import stat_nz
 from fastapi import FastAPI
@@ -16,7 +16,7 @@ from app.llm_query import query_llm
 from app.intent_classification import analyse_query
 from app.llm_usage import combine_usage
 from fastapi.middleware.cors import CORSMiddleware
-from app.db import intent_get_all, intent_insert, intent_exists, intent_delete, dataset_get_all,dataset_get_by_id, dataset_insert,dataset_exists,dataset_delete,dataset_update
+from app.db import dataset_get_all,dataset_get_by_id, dataset_insert,dataset_exists,dataset_delete,dataset_update
 
 web = FastAPI()
 
@@ -115,47 +115,6 @@ async def report(q: str):
             "tokens": tokens,
         }
 
-
-@web.get("/intent")
-async def intent_get():
-    intents = intent_get_all()
-
-    return [
-        {
-            "Description": intent.Description
-        }
-        for intent in intents
-    ]
-
-@web.post("/intent")
-async def intent_add(intent: Intent):
-    if intent_exists(intent.Description):
-        return {
-            "success": False,
-            "message": 'The intent already exists.'
-        }
-
-    intent_insert(intent.Description)
-
-    return {
-        "success": True,
-        "message": 'The intent added successfully.'
-    }
-
-@web.delete("/intent")
-async def intent_remove(description: str):
-    deleted = intent_delete(description)
-
-    if not deleted:
-        return {
-            "success": False,
-            "message": "Cannot remove the intent."
-        }
-    else:
-        return {
-            "success": True,
-            "message": "Intent removed successfully."
-        }
 
 @web.get("/dataset")
 async def dataset_get():

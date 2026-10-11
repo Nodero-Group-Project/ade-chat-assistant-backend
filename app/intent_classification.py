@@ -68,11 +68,17 @@ def analyse_query(user_query: str) -> dict:
     valid_dataset_ids = {dataset["id"] for dataset in datasets()}
     dataset_id = result.get("dataset_id")
 
+    # A confidence that isn't a number (e.g. "high") counts as not confident
+    try:
+        confidence = float(result.get("confidence", 0.0))
+    except (TypeError, ValueError):
+        confidence = 0.0
+
     # Ignore datasets that do not exist in datasets.py
     if dataset_id in valid_dataset_ids:
         analysis = {
             "selected_dataset_id": dataset_id,
-            "selection_confidence": float(result.get("confidence", 0.0)),
+            "selection_confidence": confidence,
         }
     else:
         # No suitable dataset was found
