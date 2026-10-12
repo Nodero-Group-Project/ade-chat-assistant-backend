@@ -127,6 +127,7 @@ An interactive version of this diagram is on [GitDiagram](https://gitdiagram.com
 ## Tech Stack
 
 | Category | Technology |
+|---|---|
 | Language | Python 3.14 |
 | Web framework | FastAPI |
 | LLM provider | [Groq](https://console.groq.com) (`openai/gpt-oss-20b`, `openai/gpt-oss-120b`) |
