@@ -190,6 +190,8 @@ Never commit 'app/.env'; it is already in '/gitignore'.
 
 ### 4. Set up the database
 
+The backend reads everything about a dataset, including the prompt used to build its URL, from one table:
+
 ### 5. Run the server
 
 ```bash
@@ -249,7 +251,24 @@ A request without `q` returns HTTP 422.
 
 ## Model routing
 
+'heuristic_router.py' chooses a model from the question text alone, without any extra LLM calls:
+
+| Signal | Tier |
+|---|---|
+| Empty question | expert |
+| Comparison words ("compare", "vs", "relationship between", "breakdown by", "percentage of", …) | expert |
+| Two or more "and"s | expert |
+| More than 25 words | expert |
+| More than one `?` or sentence | expert |
+| Anything else | faster |
+
 ## Testing
+```bash
+uv run pytest           # fast test, external APIs blocked
+uv run pytest --live    # also run end-to-end tests against Groq and StatsNZ (costs tokens)
+```
+
+See ['app/tests/README.md'](app/tests/README.md) for what each test covers
 
 ## Known issues
 
