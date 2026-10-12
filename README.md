@@ -1,4 +1,4 @@
-# Te Kete Aronui - ADE Chat Assistant - Backend
+# Te Kete Aronui | ADE Chat Assistant - Backend
 
 [![Architecture diagram](https://gitdiagram.com/diagram-badge.svg)](https://gitdiagram.com/nodero-group-project/ade-chat-assistant-backend?utm_source=readme&utm_medium=badge)
 
@@ -126,8 +126,7 @@ An interactive version of this diagram is on [GitDiagram](https://gitdiagram.com
 
 ## Tech Stack
 
-| | |
-|---|---|
+| Category | Technology |
 | Language | Python 3.14 |
 | Web framework | FastAPI |
 | LLM provider | [Groq](https://console.groq.com) (`openai/gpt-oss-20b`, `openai/gpt-oss-120b`) |
@@ -161,3 +160,95 @@ ade-chat-assistant-backend/
 ```
 
 ## Getting started
+
+### 1. Prerequisites
+
+- Python 3.14 (uv will install it for you if it's missing)
+- [uv](https://docs.astral.sh/uv/getting-started/installation/)
+- A PostgreSQL database
+- A Groq API key: <https://console.groq.com/keys>
+- A StatsNZ API subscription key: <https://portal.apis.stats.govt.nz>
+
+### 2. Install dependencies
+
+```bash
+uv sync
+```
+
+### 3. Configure environment variables
+
+Copy 'app/.env.example' to 'app/.env' and fill in the required values:
+
+| Variable | Used by | Description |
+|---|---|---|
+| `GROQ_API_KEY` | `intent_classification.py`, `llm_query.py` | Groq API key for both LLM calls |
+| `STAT_NZ_API_KEY` | `services/stat_nz.py` | Sent as the `Ocp-Apim-Subscription-Key` header |
+| `CONNECTION_STRING` | `db.py` | PostgreSQL connection string, e.g. `postgresql://user:password@host:5432/dbname` |
+
+Never commit 'app/.env'; it is already in '/gitignore'.
+
+### 4. Set up the database
+
+### 5. Run the server
+
+```bash
+uv run fastapi dev
+```
+
+The app entry point ('app.main:web') is set in 'pyproject.toml'. The server runs at <http://127.0.0.1:8000>, and interactive API documentation is available at <http://127.0.0.1:8000/docs>.
+
+## API reference
+
+### 'GET /report?q=<question>'
+
+Answers a question with StatsNZ data.
+
+**Success**
+
+```json
+{
+  "success": true,
+  "question": "how many house owners in Tasman?",
+  "selected_dataset": {
+    "id": "CEN23_HOU_001",
+    "name": "...",
+    "description": "...",
+    "filters": "Year, Location, Amenities, Income, Tenure"
+  },
+  "data": { "...": "SDMX-JSON from StatsNZ" },
+  "model": "openai/gpt-oss-20b",
+  "tier": "faster",
+  "tokens": {
+    "input": 1212, "cached": 0, "output": 258, "reasoning": 173,
+    "steps": {
+      "analyse_query": { "input": 588, "cached": 0, "output": 60, "reasoning": 33 },
+      "query_llm":     { "input": 624, "cached": 0, "output": 198, "reasoning": 140 }
+    }
+  }
+}
+```
+
+**Failures** - every failure has '"success": false' and a 'message':
+
+| Situation | `message` | Extra fields |
+|---|---|---|
+| No dataset matches, or confidence < 0.5 | `Unfortunately we can't provide any data for your question.` | `selected_dataset` is `""`; only `analyse_query` tokens |
+| The LLM can't build a URL (e.g. year not available) | The LLM's reason, e.g. `Year 1990 is not available` | `selected_dataset`, `model`, `tier`, `tokens` |
+| The LLM replies in an unexpected format | `No data found. Please try again later.` | as above |
+| StatsNZ returns nothing or errors | `No data retrieved. Please try again later.` | as above, plus the generated `URL` |
+
+A request without `q` returns HTTP 422.
+
+#### Reading the data
+
+
+### Dataset administration
+
+## Adding a dataset
+
+## Model routing
+
+## Testing
+
+## Known issues
+
