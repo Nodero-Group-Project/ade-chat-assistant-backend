@@ -2,7 +2,7 @@ import pytest
 from unittest.mock import patch
 
 from app.db import Dataset
-from app.main import dataset_get,dataset_add,dataset_edit,dataset_remove
+from app.main import dataset_add,dataset_edit,dataset_remove
 
 @pytest.mark.asyncio
 @patch("app.main.dataset_add")

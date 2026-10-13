@@ -21,7 +21,7 @@ async def test_report_no_dataset():
 
 @pytest.mark.asyncio
 async def test_report_education_result():
-    question = "how many student which was living in auckland hold bachelor in 2018?"
+    question = "how many workers which was living in auckland hold bachelor in 2018?"
 
     result = await report(question)
 

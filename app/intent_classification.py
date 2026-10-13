@@ -43,7 +43,7 @@ def analyse_query(user_query: str) -> dict:
             {"role": "user", "content": user_query},
         ],
     )
-
+    print(SYSTEM_PROMPT)
     usage = log_usage("analyse_query", MODEL, completion)
 
     # Extract the LLMs response
