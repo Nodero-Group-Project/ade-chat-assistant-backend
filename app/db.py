@@ -55,39 +55,39 @@ def dataset_get_by_id(dataset_id: str) -> Dataset | None:
                 Filters=row[4]
             )
 
-def dataset_insert(id:str,name:str,description:str,skill:str,filters:str) -> None:
+def dataset_insert(dataset_id:str,name:str,description:str,skill:str,filters:str) -> None:
     with psycopg.connect(connection_string) as connection:
         with connection.cursor() as cursor:
             cursor.execute(
                 'INSERT INTO dataset (Id, Name, Description, Skill, Filters) VALUES (%s, %s, %s, %s, %s)',
                 (
-                    id,name,description,skill,filters
+                    dataset_id,name,description,skill,filters
                 )
             )
 
-def dataset_exists(id: str) -> bool:
+def dataset_exists(dataset_id: str) -> bool:
     with psycopg.connect(connection_string) as connection:
         with connection.cursor() as cursor:
             cursor.execute(
                 'SELECT EXISTS('
                 'SELECT 1 FROM dataset WHERE Id = %s'
                 ')',
-                (id,)
+                (dataset_id,)
             )
 
             return cursor.fetchone()[0]
 
-def dataset_delete(id: str) -> bool:
+def dataset_delete(dataset_id: str) -> bool:
     with psycopg.connect(connection_string) as connection:
         with connection.cursor() as cursor:
             cursor.execute(
                 'DELETE FROM dataset WHERE LOWER(ID) = LOWER(%s)',
-                (id,)
+                (dataset_id,)
             )
 
             return cursor.rowcount > 0
 
-def dataset_update(id:str,name:str,description:str,skill:str,filters:str) -> bool:
+def dataset_update(dataset_id:str,name:str,description:str,skill:str,filters:str) -> bool:
     with psycopg.connect(connection_string) as connection:
         with connection.cursor() as cursor:
             cursor.execute(
@@ -102,7 +102,7 @@ def dataset_update(id:str,name:str,description:str,skill:str,filters:str) -> boo
                     description,
                     skill,
                     filters,
-                    id
+                    dataset_id
                 )
             )
 
