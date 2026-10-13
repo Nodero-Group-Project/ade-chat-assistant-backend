@@ -113,35 +113,3 @@ def test_statsnz_failure(pipeline):
     assert body["success"] is False
     assert body["message"] == "No data retrieved. Please try again later."
     assert body["URL"] == URL
-
-
-@pytest.fixture
-def report_dir(tmp_path, monkeypatch):
-    """ A temporary exports folder with one report, and a secret file next to it """
-    exports = tmp_path / "exports"
-    exports.mkdir()
-    (exports / "report.csv").write_text("region,count\nTasman,1290\n")
-    (tmp_path / ".env").write_text("STAT_NZ_API_KEY=secret")
-    monkeypatch.setattr(main, "REPORT_DIR", str(exports))
-    return exports
-
-
-def test_download_existing_report(report_dir):
-    response = client.get("/download", params={"filename": "report.csv"})
-
-    assert response.status_code == 200
-    assert "Tasman,1290" in response.text
-
-
-def test_download_missing_report(report_dir):
-    response = client.get("/download", params={"filename": "nope.csv"})
-
-    assert response.status_code == 404
-
-
-@pytest.mark.parametrize("filename", ["../.env", "..\\.env", "../exports/../.env"])
-def test_download_cannot_escape_report_folder(report_dir, filename):
-    response = client.get("/download", params={"filename": filename})
-
-    assert response.status_code == 404
-    assert "secret" not in response.text

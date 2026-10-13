@@ -6,13 +6,15 @@ import re
 import pytest
 from app import llm_query
 from app.datasets import datasets
+from app.db import dataset_get_by_id
 
 DATASET_IDS = [dataset["id"] for dataset in datasets()]
 
 def prompt_for(dataset_id, fake_groq):
     """ Run query_llm with a fake Groq client and return the system prompt it sent """
     client = fake_groq(llm_query, "ERROR:test")
-    result = llm_query.query_llm("test question", {"id": dataset_id})
+    dataset = dataset_get_by_id(dataset_id)
+    result = llm_query.query_llm("test question", {"id": dataset_id,"Skill":dataset.Skill})
     
     assert not result["message"].startswith("No prompt configured"), f"no prompt for {dataset_id}"
     return client.chat.completions.create.call_args.kwargs["messages"][0]["content"]
