@@ -1,3 +1,5 @@
+NOTE: If token consumption reaches to the limitation, some tests which call the LLM would be failed.
+
 Fasts test:
 uv run pytest
 
