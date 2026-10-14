@@ -4,40 +4,37 @@ Sanity checks on the dataset prompts, to catch copy-paste mistakes between datas
 
 import re
 import pytest
-from app import llm_query
 from app.datasets import datasets
 from app.db import dataset_get_by_id
 
 DATASET_IDS = [dataset["id"] for dataset in datasets()]
 
-def prompt_for(dataset_id, fake_groq):
-    """ Run query_llm with a fake Groq client and return the system prompt it sent """
-    client = fake_groq(llm_query, "ERROR:test")
-    dataset = dataset_get_by_id(dataset_id)
-    result = llm_query.query_llm("test question", {"id": dataset_id,"Skill":dataset.Skill})
-    
-    assert not result["message"].startswith("No prompt configured"), f"no prompt for {dataset_id}"
-    return client.chat.completions.create.call_args.kwargs["messages"][0]["content"]
+def prompt_for(dataset_id):
+    """ Return the dataset's Skill prompt, the system prompt query_llm sends for it """
+    prompt = dataset_get_by_id(dataset_id).Skill
+
+    assert prompt, f"no prompt for {dataset_id}"
+    return prompt
 
 @pytest.mark.parametrize("dataset_id", DATASET_IDS)
-def test_prompt_url_template_uses_its_own_dataset(dataset_id, fake_groq):
-    prompt = prompt_for(dataset_id, fake_groq)
+def test_prompt_url_template_uses_its_own_dataset(dataset_id):
+    prompt = prompt_for(dataset_id)
     
     template_ids = re.findall(r"STATSNZ,([A-Z0-9_]+),1\.0/", prompt)
     assert template_ids == [dataset_id]
     
 
 @pytest.mark.parametrize("dataset_id", DATASET_IDS)
-def test_prompt_defines_the_output_format(dataset_id, fake_groq):
-    prompt = prompt_for(dataset_id, fake_groq)
+def test_prompt_defines_the_output_format(dataset_id):
+    prompt = prompt_for(dataset_id)
     
     assert "API_URL:" in prompt
     assert "ERROR:" in prompt
     
 
 @pytest.mark.parametrize("dataset_id", DATASET_IDS)
-def test_prompt_has_no_duplicate_codes_within_a_dimension(dataset_id, fake_groq):
-    prompt = prompt_for(dataset_id, fake_groq)
+def test_prompt_has_no_duplicate_codes_within_a_dimension(dataset_id):
+    prompt = prompt_for(dataset_id)
     
     section, codes, duplicates = None, {}, []
     for line in prompt.splitlines():

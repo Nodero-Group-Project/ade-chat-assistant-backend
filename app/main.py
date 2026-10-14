@@ -11,7 +11,8 @@ load_dotenv(os.path.join(os.path.dirname(__file__), ".env"))
 
 from app.models.Dataset import Dataset
 from app.services import stat_nz
-from fastapi import FastAPI
+from fastapi import FastAPI, HTTPException
+from fastapi.responses import FileResponse
 from app.llm_query import query_llm
 from app.intent_classification import analyse_query
 from app.llm_usage import combine_usage
@@ -115,6 +116,21 @@ async def report(q: str):
             "tokens": tokens,
         }
 
+
+@web.get("/download")
+async def download(filename: str):
+    # Only serve files directly inside the exports folder, so paths like ../.env can't be read
+    report_dir = os.path.realpath(REPORT_DIR)
+    file_path = os.path.realpath(os.path.join(report_dir, filename))
+
+    if os.path.dirname(file_path) != report_dir or not os.path.isfile(file_path):
+        raise HTTPException(status_code=404, detail="File not found")
+
+    return FileResponse(
+        path=file_path,
+        filename=os.path.basename(file_path),
+        media_type="text/csv"
+    )
 
 @web.get("/dataset")
 async def dataset_get():
