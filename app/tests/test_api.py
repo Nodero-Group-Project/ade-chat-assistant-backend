@@ -6,6 +6,7 @@ import pytest
 from fastapi.testclient import TestClient
 
 from app import main
+from app.db import Dataset
 
 URL = "https://api.data.stats.govt.nz/rest/data/STATSNZ,CEN23_HOU_001,1.0/2023.16.99.8.001?dimensionAtObservation=AllDimensions"
 CLASSIFIER_USAGE = {"input": 580, "cached": 0, "output": 60, "reasoning": 30}
@@ -28,14 +29,19 @@ def pipeline(monkeypatch):
     }
 
     def fake_query_llm(user_query, dataset):
-        state["calls"]["query_llm"].append((user_query, dataset["id"]))
+        state["calls"]["query_llm"].append((user_query, dataset["Id"]))
         return state["query_result"]
 
     def fake_stat_nz_get(url):
         state["calls"]["stat_nz"].append(url)
         return state["statistic_data"]
 
+    def fake_dataset_get_by_id(dataset_id):
+        return Dataset(Id=dataset_id, Name="Household", Description="Household amenities", Skill="prompt",
+                       Filters="Year, Location, Amenities, Income, Tenure")
+
     monkeypatch.setattr(main, "analyse_query", lambda q: state["analysis"])
+    monkeypatch.setattr(main, "dataset_get_by_id", fake_dataset_get_by_id)
     monkeypatch.setattr(main, "query_llm", fake_query_llm)
     monkeypatch.setattr(main.stat_nz, "get", fake_stat_nz_get)
     return state

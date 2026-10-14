@@ -36,6 +36,8 @@ def query_llm(user_query: str, dataset: dict):
         reasoning_format="hidden",
         # Mapping a question to codes is simple; low effort cuts billed reasoning tokens
         reasoning_effort="low",
+        # Mapping a question to codes has one right answer, so remove randomness
+        temperature=0,
         max_completion_tokens=4096,
         # Static system prompt first so Groq can reuse the cached prefix
         messages=[
@@ -53,7 +55,7 @@ def query_llm(user_query: str, dataset: dict):
     if result.startswith("API_URL"):
         return {
             "success": True,
-            "URL": result.replace("API_URL:", ""),
+            "URL": result.replace("API_URL:", "").strip(),
             "model": model,
             "tier": tier,
             "usage": usage
@@ -62,7 +64,7 @@ def query_llm(user_query: str, dataset: dict):
     elif result.startswith("ERROR"):
         return {
             "success": False,
-            "message":result.replace("ERROR:", ""),
+            "message":result.replace("ERROR:", "").strip(),
             "model": model,
             "tier": tier,
             "usage": usage

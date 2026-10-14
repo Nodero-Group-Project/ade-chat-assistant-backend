@@ -36,6 +36,8 @@ def analyse_query(user_query: str) -> dict:
         model=MODEL,
         reasoning_format="hidden",
         reasoning_effort="low",
+        # The same question should always pick the same dataset
+        temperature=0,
         response_format={"type": "json_object"},
         max_completion_tokens=1024,
         messages=[

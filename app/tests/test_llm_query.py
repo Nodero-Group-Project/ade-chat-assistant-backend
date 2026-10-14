@@ -4,7 +4,8 @@ Tests for query_llm's handling of LLM replies, using a fake Groq client.
 
 from app import llm_query
 
-HOUSEHOLD = {"id": "CEN23_HOU_001"}
+# Shaped like asdict(Dataset), which is what /report passes to query_llm
+HOUSEHOLD = {"Id": "CEN23_HOU_001", "Skill": "Convert the user's question into a CEN23_HOU_001 API URL."}
 URL = "https://api.data.stats.govt.nz/rest/data/STATSNZ,CEN23_HOU_001,1.0/2023.16.99.8.001?dimensionAtObservation=AllDimensions"
 
 def test_url_reply_is_returned(fake_groq):
@@ -49,14 +50,12 @@ def test_empty_reply_returns_fallback_message(fake_groq):
     assert result["success"] is False
     assert result["message"] == "No data found. Please try again later."
     
-def test_unknown_dataset_does_not_call_groq(fake_groq):
+def test_dataset_skill_is_the_system_prompt(fake_groq):
     client = fake_groq(llm_query, f"API_URL: {URL}")
-    
-    result = llm_query.query_llm("anything", {"id": "NOT_A_DATASET"})
-    
-    assert result["success"] is False
-    assert "No prompt configured" in result["message"]
-    client.chat.completions.create.assert_not_called()
+
+    llm_query.query_llm("house owners in Tasman", HOUSEHOLD)
+
+    assert client.chat.completions.create.call_args.kwargs["messages"][0]["content"] == HOUSEHOLD["Skill"]
 
 def test_simple_question_uses_faster_model(fake_groq):
     client = fake_groq(llm_query, f"API_URL: {URL}")
