@@ -6,7 +6,6 @@ import re
 import pytest
 from app.datasets import datasets
 from app.db import dataset_get_by_id
-from app.db import dataset_get_by_id
 
 DATASET_IDS = [dataset["id"] for dataset in datasets()]
 

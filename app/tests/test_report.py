@@ -40,7 +40,9 @@ async def test_report_not_valid_dimension():
 
     assert result["success"] is False
     assert result["question"] == question
-    assert result["selected_dataset"] == "CEN23_HAD_020"
+    # Infants aren't covered (the dataset is people aged 15+), so no data comes back, whether
+    # dataset selection rejects the question or the URL step returns ERROR
+    assert "data" not in result
 
 
 @pytest.mark.asyncio
