@@ -23,7 +23,7 @@ SIMPLE_SIGNAL_WORDS = [
 
 def heuristic_tier(user_query: str, dataset: dict | None = None) -> str:
     """
-    Decide "faster" or "expert" purely from he text of the query
+    Decide "faster" or "expert" purely from he texts of the query
     """
     
     query = user_query.lower().strip()

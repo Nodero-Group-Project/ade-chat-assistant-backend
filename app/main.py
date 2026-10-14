@@ -34,7 +34,7 @@ REPORT_DIR = "exports"
 # Report endpoint
 @web.get("/report")
 async def report(q: str):
-    # Receive the user's question and analyse its intent
+    # Receive the user's question and analyze its intent
     analysis = analyse_query(q)
 
     # Do not retrieve data when the selected dataset is not a strong match.

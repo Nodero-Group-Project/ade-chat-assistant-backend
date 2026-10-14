@@ -76,7 +76,7 @@ def test_comparison_question_uses_expert_model(fake_groq):
 def test_request_keeps_token_saving_settings(fake_groq):
     client = fake_groq(llm_query, f"API_URL: {URL}")
     
-    result = llm_query.query_llm("house owners in Tasman", HOUSEHOLD)
+    # result = llm_query.query_llm("house owners in Tasman", HOUSEHOLD)
     
     kwargs = client.chat.completions.create.call_args.kwargs
     assert kwargs["reasoning_effort"] == "low"

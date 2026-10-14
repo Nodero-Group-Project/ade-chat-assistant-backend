@@ -33,7 +33,19 @@ async def test_report_no_dataset():
     assert result["message"] == "Unfortunately we can't provide any data for your question."
 
 @pytest.mark.asyncio
+async def test_report_not_valid_dimension():
+    question = "how many infants smoke in 2018?"
+
+    result = await report(question)
+
+    assert result["success"] is False
+    assert result["question"] == question
+    assert result["selected_dataset"] == "CEN23_HAD_020"
+
+
+@pytest.mark.asyncio
 async def test_report_education_result():
+    question = "how many workers which was living in auckland hold bachelor in 2018?"
     # The dataset covers the employed population, so asking about "students" correctly matches no dataset
     question = "how many people living in auckland held a bachelor degree in 2018?"
 

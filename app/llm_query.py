@@ -17,7 +17,7 @@ MODELS = {
     "vision": "qwen/qwen3.8-27b"
 }
 
-def select_model(user_query: str, dataset: dict) -> str:
+def select_model(user_query: str, dataset: dict) -> tuple[str, str]:
     """ Route to a Groq model using the heuristic router """
     tier = heuristic_tier(user_query, dataset)
     model = MODELS[tier]

@@ -2,7 +2,7 @@ import pytest
 from unittest.mock import patch
 
 from app.db import Dataset
-from app.main import dataset_get,dataset_add,dataset_edit,dataset_remove
+from app.main import dataset_add,dataset_edit,dataset_remove,dataset_get
 
 @pytest.mark.asyncio
 @patch("app.main.dataset_add")
@@ -22,6 +22,14 @@ async def test_dataset_add(mock):
         "success": True,
         "message": 'The dataset added successfully.'
     }
+
+@pytest.mark.asyncio
+@patch("app.main.dataset_get_all")
+async def test_dataset_get_all(mock):
+
+    result = await dataset_get()
+
+    assert result is not None
 
 @pytest.mark.asyncio
 @patch("app.main.dataset_add")
