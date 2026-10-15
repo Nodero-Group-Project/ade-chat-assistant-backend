@@ -116,22 +116,6 @@ async def report(q: str):
             "tokens": tokens,
         }
 
-
-@web.get("/download")
-async def download(filename: str):
-    # Only serve files directly inside the exports folder, so paths like ../.env can't be read
-    report_dir = os.path.realpath(REPORT_DIR)
-    file_path = os.path.realpath(os.path.join(report_dir, filename))
-
-    if os.path.dirname(file_path) != report_dir or not os.path.isfile(file_path):
-        raise HTTPException(status_code=404, detail="File not found")
-
-    return FileResponse(
-        path=file_path,
-        filename=os.path.basename(file_path),
-        media_type="text/csv"
-    )
-
 @web.get("/dataset")
 async def dataset_get():
     datasets = dataset_get_all()
