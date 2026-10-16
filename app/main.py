@@ -11,7 +11,8 @@ load_dotenv(os.path.join(os.path.dirname(__file__), ".env"))
 
 from app.models.Dataset import Dataset
 from app.services import stat_nz
-from fastapi import FastAPI
+from fastapi import FastAPI, HTTPException
+from fastapi.responses import FileResponse
 from app.llm_query import query_llm
 from app.intent_classification import analyse_query
 from app.llm_usage import combine_usage
@@ -114,7 +115,6 @@ async def report(q: str):
             "tier": query_result["tier"],
             "tokens": tokens,
         }
-
 
 @web.get("/dataset")
 async def dataset_get():

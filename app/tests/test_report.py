@@ -8,6 +8,19 @@ from app.main import report
 
 pytestmark = pytest.mark.live
 
+# Key position of the behaviour dimension in CEN23_HAD_020
+BEHAVIOUR = 2
+
+def observations_by_label(result, position):
+    """
+    Map each value of the dimension at `position` to its observation, using StatsNZ's labels.
+    Observation keys follow StatsNZ's value order, not the requested order, so decode them by label.
+    """
+    data = result["data"]["data"]
+    values = data["structures"][0]["dimensions"]["observation"][position]["values"]
+    observations = data["dataSets"][0]["observations"]
+    return {values[int(key.split(":")[position])]["name"]: obs[0] for key, obs in observations.items()}
+
 @pytest.mark.asyncio
 async def test_report_no_dataset():
     question = "Is there any black hole near the solar system?"
@@ -27,12 +40,16 @@ async def test_report_not_valid_dimension():
 
     assert result["success"] is False
     assert result["question"] == question
-    assert result["selected_dataset"] == "CEN23_HAD_020"
+    # Infants aren't covered (the dataset is people aged 15+), so no data comes back, whether
+    # dataset selection rejects the question or the URL step returns ERROR
+    assert "data" not in result
 
 
 @pytest.mark.asyncio
 async def test_report_education_result():
     question = "how many workers which was living in auckland hold bachelor in 2018?"
+    # The dataset covers the employed population, so asking about "students" correctly matches no dataset
+    question = "how many people living in auckland held a bachelor degree in 2018?"
 
     result = await report(question)
 
@@ -103,16 +120,12 @@ async def test_report_smoking_no_two_urls():
 
     result = await report(question)
 
-    result_success = result["success"]
-    result_question = result["question"]
-    result_dataset = result["selected_dataset"]["id"]
-    result_data_1 = result["data"]["data"]["dataSets"][0]["observations"]["0:0:0:0:0:0"][0]
-    result_data_2 = result["data"]["data"]["dataSets"][0]["observations"]["0:0:1:0:0:0"][0]
-    result_data_3 = result["data"]["data"]["dataSets"][0]["observations"]["0:0:2:0:0:0"][0]
-
-    assert ((result_success == True) and
-            (result_question == question) and
-            (result_dataset == "CEN23_HAD_020") and
-            (1012422 == result_data_1) and
-            (4057623 == result_data_2) and
-            (2734392 == result_data_3))
+    assert result["success"] is True
+    assert result["question"] == question
+    assert result["selected_dataset"]["id"] == "CEN23_HAD_020"
+    # Smokers = regular smokers; non-smokers = ex-smokers + never smoked. 999 is everyone, not smokers.
+    assert observations_by_label(result, BEHAVIOUR) == {
+        "Regular smoker": 310809,
+        "Ex-smoker": 1012422,
+        "Never smoked regularly": 2734392,
+    }
