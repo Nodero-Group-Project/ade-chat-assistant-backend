@@ -16,7 +16,7 @@ Run tests whose names match a keyword:
 uv run pytest -k download
 
 Include the live end-to-end tests:
-uv run pytest --live
+uv run pytest --live app/tests/test_report.py
 
 Show print output such as the [usage] and [routing] lines:
 uv run pytest -s
